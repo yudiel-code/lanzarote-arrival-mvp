@@ -71,11 +71,18 @@ function renderApp() {
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-route]");
-  if (!button) return;
+  const routeButton = event.target.closest("[data-route]");
+  if (routeButton) {
+    appState.currentRoute = routeButton.dataset.route;
+    renderApp();
+    return;
+  }
 
-  appState.currentRoute = button.dataset.route;
-  renderApp();
+  const arrivalButton = event.target.closest("[data-arrival]");
+  if (arrivalButton) {
+    appState.arrivalType = arrivalButton.dataset.arrival;
+    renderApp();
+  }
 });
 
 renderApp();
