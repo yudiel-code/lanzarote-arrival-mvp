@@ -5,7 +5,27 @@ function renderArrivalDetails() {
     return `
       <div class="arrival-details">
         <p>Tipo elegido: Vuelo</p>
-        <p>Aquí irá luego la entrada de aeropuerto, hora y contexto de aterrizaje.</p>
+
+        <div class="arrival-form">
+          <label for="flight-airport">Aeropuerto</label>
+          <select id="flight-airport">
+            <option value="">Selecciona aeropuerto</option>
+            <option value="ace">ACE - César Manrique Lanzarote</option>
+          </select>
+
+          <label for="flight-time">Hora estimada de llegada</label>
+          <input id="flight-time" type="time" />
+
+          <label for="flight-passengers">Personas</label>
+          <select id="flight-passengers">
+            <option value="">Selecciona</option>
+            <option value="1">1 persona</option>
+            <option value="2">2 personas</option>
+            <option value="3">3 personas</option>
+            <option value="4">4 personas</option>
+            <option value="5+">5 o más</option>
+          </select>
+        </div>
       </div>
     `;
   }

@@ -57,3 +57,25 @@ button:hover {
 .arrival-details p + p {
   margin-top: 6px;
 }
+
+.arrival-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.arrival-form label {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.arrival-form input,
+.arrival-form select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+}
