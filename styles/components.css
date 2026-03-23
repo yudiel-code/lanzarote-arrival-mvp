@@ -1,0 +1,10 @@
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+p {
+  color: var(--muted);
+  font-size: 1rem;
+}

@@ -1,0 +1,23 @@
+#app {
+  width: 100%;
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.screen {
+  width: 100%;
+}
+
+.screen--base {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+}

@@ -1,0 +1,21 @@
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 16px;
+  --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
