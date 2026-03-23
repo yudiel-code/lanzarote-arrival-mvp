@@ -79,3 +79,374 @@ button:hover {
   color: var(--text);
   padding: 10px 12px;
 }
+
+.radar-summary,
+.radar-operational,
+.radar-signals,
+.decision-context,
+.decision-base,
+.decision-comparison,
+.decision-recommendation {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #f9fafb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.radar-summary p + p,
+.radar-operational p + p,
+.radar-signals p + p,
+.decision-context p + p,
+.decision-base p + p,
+.decision-comparison p + p,
+.decision-recommendation p + p {
+  margin-top: 8px;
+}
+
+.radar-summary strong,
+.radar-operational strong,
+.radar-signals strong,
+.decision-context strong,
+.decision-base strong,
+.decision-comparison strong,
+.decision-recommendation strong {
+  color: var(--text);
+}
+
+.radar-summary ul,
+.radar-signals ul,
+.decision-context ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.radar-summary li,
+.radar-signals li,
+.decision-context li {
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.radar-summary li + li,
+.radar-signals li + li,
+.decision-context li + li {
+  margin-top: 8px;
+}
+
+.radar-operational {
+  background: #ffffff;
+}
+
+.radar-signals {
+  background: #ffffff;
+}
+
+.radar-actions,
+.decision-actions {
+  margin-top: 16px;
+}
+
+.radar-actions button,
+.decision-actions button {
+  min-height: 48px;
+  font-weight: 600;
+}
+
+.decision-options {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.decision-option {
+  padding: 14px;
+  border: 1px solid #dfe5ec;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.decision-option p + p {
+  margin-top: 8px;
+}
+
+.decision-option--alto {
+  border-color: #cfd8e3;
+  background: #f8fafc;
+}
+
+.decision-option--medio {
+  border-color: #dde3ea;
+  background: #fbfcfd;
+}
+
+.decision-recommendation--taxi,
+.action-recommendation--taxi,
+.action-activated-plan--taxi {
+  border-color: #d6dbe3;
+  background: #f8fafc;
+}
+
+.decision-recommendation--bus,
+.action-recommendation--bus,
+.action-activated-plan--bus {
+  border-color: #dde3ea;
+  background: #fbfcfd;
+}
+
+.action-reading,
+.action-recommendation,
+.action-next-steps,
+.action-primary-cta,
+.action-activated-plan {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #f9fafb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.action-reading p + p,
+.action-recommendation p + p,
+.action-next-steps p + p,
+.action-primary-cta p + p,
+.action-activated-plan p + p {
+  margin-top: 8px;
+}
+
+.action-reading strong,
+.action-recommendation strong,
+.action-next-steps strong,
+.action-primary-cta strong,
+.action-activated-plan strong {
+  color: var(--text);
+}
+
+.action-next-steps ul,
+.action-activated-plan ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.action-next-steps li,
+.action-activated-plan li {
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.action-next-steps li + li,
+.action-activated-plan li + li {
+  margin-top: 8px;
+}
+
+.action-recommendation + .action-next-steps {
+  border-color: #cfd8e3;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.action-recommendation + .action-next-steps strong {
+  color: #0f172a;
+}
+
+.action-recommendation + .action-next-steps ul {
+  margin-top: 10px;
+}
+
+.action-recommendation + .action-next-steps li {
+  line-height: 1.5;
+}
+
+.action-recommendation + .action-next-steps p:last-child {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e7ebf0;
+}
+
+.action-primary-cta {
+  background: #ffffff;
+}
+
+.action-primary-cta button {
+  margin-top: 12px;
+  min-height: 48px;
+  font-weight: 600;
+}
+
+.action-primary-cta p:last-child,
+.action-activated-plan p:last-child,
+.action-next-steps p:last-child,
+.action-reading p:last-child,
+.action-recommendation p:last-child {
+  margin-bottom: 0;
+}
+
+.action-recommendation--taxi,
+.action-activated-plan--taxi {
+  border-color: #d6dbe3;
+  background: #f8fafc;
+}
+
+.action-recommendation--bus,
+.action-activated-plan--bus {
+  border-color: #dde3ea;
+  background: #fbfcfd;
+}
+
+@media (min-width: 768px) {
+  .action-reading,
+  .action-recommendation,
+  .action-next-steps,
+  .action-primary-cta,
+  .action-activated-plan {
+    padding: 18px;
+  }
+}
+.action-lodging-preview,
+.pro-lodging-unlocked {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.action-lodging-preview p + p,
+.pro-lodging-unlocked p + p {
+  margin-top: 8px;
+}
+
+.action-lodging-preview strong,
+.pro-lodging-unlocked strong {
+  color: var(--text);
+}
+
+.action-lodging-preview-map,
+.pro-lodging-unlocked-map {
+  position: relative;
+  min-height: 180px;
+  margin-top: 12px;
+  border: 1px solid #dfe5ec;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.92)),
+    repeating-linear-gradient(
+      0deg,
+      #eef2f6 0,
+      #eef2f6 22px,
+      #f8fafc 22px,
+      #f8fafc 44px
+    );
+}
+
+.action-lodging-preview-pin {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: #0f172a;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+}
+
+.action-lodging-preview-pin--primary {
+  top: 34px;
+  left: 28%;
+}
+
+.action-lodging-preview-pin--secondary {
+  top: 74px;
+  right: 22%;
+  background: #475569;
+}
+
+.action-lodging-preview-pin--bottom {
+  top: auto;
+  bottom: 44px;
+  left: 44%;
+}
+
+.action-lodging-preview-overlay {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: 12px;
+  border: 1px solid rgba(223, 229, 236, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+}
+
+.action-lodging-preview-card,
+.action-lodging-preview-lock,
+.pro-lodging-unlocked-card,
+.pro-lodging-unlocked-note {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.action-lodging-preview-lock {
+  background: #f1f5f9;
+}
+
+.pro-lodging-unlocked-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pro-lodging-unlocked-grid {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.pro-lodging-unlocked-spot {
+  padding: 12px;
+  border: 1px solid rgba(223, 229, 236, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+}
+
+.pro-lodging-unlocked-spot--primary {
+  border-color: #cbd5e1;
+  background: rgba(248, 250, 252, 0.96);
+}
+
+@media (min-width: 768px) {
+  .action-reading,
+  .action-recommendation,
+  .action-next-steps,
+  .action-primary-cta,
+  .action-activated-plan,
+  .action-lodging-preview,
+  .pro-lodging-unlocked {
+    padding: 18px;
+  }
+
+  .action-lodging-preview-map,
+  .pro-lodging-unlocked-map {
+    min-height: 210px;
+  }
+}
