@@ -1,4 +1,5 @@
 export const appState = {
+  currentRoute: "home",
   arrivalType: null,
   arrivalData: null,
   userContext: null,

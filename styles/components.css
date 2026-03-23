@@ -1,10 +1,41 @@
-h1 {
-  font-size: 1.75rem;
+h1,
+h2 {
   line-height: 1.2;
   margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
 }
 
 p {
   color: var(--muted);
   font-size: 1rem;
+}
+
+nav.screen {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+button {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.96;
 }

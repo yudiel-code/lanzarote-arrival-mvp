@@ -16,6 +16,15 @@ const moduleViews = {
   [routes.pro]: renderPro
 };
 
+const navItems = [
+  { key: routes.home, label: "Inicio" },
+  { key: routes.llegada, label: "Llegada" },
+  { key: routes.radar, label: "Radar" },
+  { key: routes.decision, label: "Decisión" },
+  { key: routes.accion, label: "Acción" },
+  { key: routes.pro, label: "Pro" }
+];
+
 function renderHome() {
   return `
     <section class="screen screen--base">
@@ -25,19 +34,48 @@ function renderHome() {
   `;
 }
 
-function renderApp(route = routes.home) {
-  if (!app) return;
+function getCurrentView() {
+  if (appState.currentRoute === routes.home) {
+    return renderHome();
+  }
 
-  const view = route === routes.home
-    ? renderHome
-    : moduleViews[route] || renderHome;
+  const renderModule = moduleViews[appState.currentRoute];
+  return renderModule ? renderModule() : renderHome();
+}
+
+function renderNav() {
+  return `
+    <nav class="screen screen--base">
+      ${navItems
+        .map(
+          (item) => `
+            <button type="button" data-route="${item.key}">
+              ${item.label}
+            </button>
+          `
+        )
+        .join("")}
+    </nav>
+  `;
+}
+
+function renderApp() {
+  if (!app) return;
 
   app.innerHTML = `
     <main class="app-shell">
-      ${view()}
+      ${renderNav()}
+      ${getCurrentView()}
     </main>
   `;
 }
 
-appState.currentRoute = appState.currentRoute || routes.home;
-renderApp(appState.currentRoute);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-route]");
+  if (!button) return;
+
+  appState.currentRoute = button.dataset.route;
+  renderApp();
+});
+
+renderApp();
