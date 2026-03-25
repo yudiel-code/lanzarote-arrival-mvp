@@ -1,6 +1,122 @@
 import { appState } from "../state.js";
+<<<<<<< HEAD
 import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
 
+=======
+<<<<<<< HEAD
+import { mockData } from "../data/mock-data.js";
+import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
+
+const GOOGLE_STATIC_MAPS_ENDPOINT = "https://maps.googleapis.com/maps/api/staticmap";
+const LANZAROTE_FALLBACK_CENTER = { lat: 28.9611, lng: -13.6134 };
+
+let actionPreviewMap = null;
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getGoogleStaticMapsApiKey() {
+  return String(window.APP_GOOGLE_MAPS_STATIC_API_KEY || "").trim();
+}
+
+function getMapBounds(locations) {
+  if (!Array.isArray(locations) || locations.length === 0) {
+    return null;
+  }
+
+  return locations.reduce(
+    (acc, location) => {
+      const { lat, lng } = location.coordinates;
+
+      return {
+        minLat: Math.min(acc.minLat, lat),
+        maxLat: Math.max(acc.maxLat, lat),
+        minLng: Math.min(acc.minLng, lng),
+        maxLng: Math.max(acc.maxLng, lng)
+      };
+    },
+    {
+      minLat: locations[0].coordinates.lat,
+      maxLat: locations[0].coordinates.lat,
+      minLng: locations[0].coordinates.lng,
+      maxLng: locations[0].coordinates.lng
+    }
+  );
+}
+
+function getMapCenter(locations) {
+  const bounds = getMapBounds(locations);
+
+  if (!bounds) {
+    return LANZAROTE_FALLBACK_CENTER;
+  }
+
+  return {
+    lat: Number(((bounds.minLat + bounds.maxLat) / 2).toFixed(6)),
+    lng: Number(((bounds.minLng + bounds.maxLng) / 2).toFixed(6))
+  };
+}
+
+function getMapZoom(locations, variant = "preview") {
+  const bounds = getMapBounds(locations);
+
+  if (!bounds) {
+    return variant === "pro" ? 10 : 11;
+  }
+
+  const latSpan = bounds.maxLat - bounds.minLat;
+  const lngSpan = bounds.maxLng - bounds.minLng;
+  const span = Math.max(latSpan, lngSpan);
+
+  if (span > 0.4) return 10;
+  if (span > 0.22) return 11;
+  if (span > 0.12) return 12;
+  return variant === "pro" ? 12 : 13;
+}
+
+function buildGoogleStaticMapsUrl(locations, { width, height, variant = "preview" } = {}) {
+  const apiKey = getGoogleStaticMapsApiKey();
+
+  if (!apiKey || !Array.isArray(locations) || locations.length === 0) {
+    return "";
+  }
+
+  const limitedLocations = locations.slice(0, variant === "pro" ? 5 : 3);
+  const center = getMapCenter(limitedLocations);
+  const zoom = getMapZoom(limitedLocations, variant);
+  const params = new URLSearchParams({
+    key: apiKey,
+    size: `${width}x${height}`,
+    scale: "2",
+    maptype: "roadmap",
+    format: "png",
+    center: `${center.lat},${center.lng}`,
+    zoom: String(zoom)
+  });
+
+  limitedLocations.forEach((location) => {
+    const color = location.isPrimary ? "0x0f172a" : "0x64748b";
+    const size = location.isPrimary ? "mid" : "small";
+    params.append(
+      "markers",
+      `size:${size}|color:${color}|${location.coordinates.lat},${location.coordinates.lng}`
+    );
+  });
+
+  return `${GOOGLE_STATIC_MAPS_ENDPOINT}?${params.toString()}`;
+}
+
+=======
+import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
+
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 function getPassengerLoad(value) {
   if (value === "5+") return "high";
 
@@ -245,6 +361,7 @@ function getProUnlockCopy(reading, recommendation) {
   };
 }
 
+<<<<<<< HEAD
 export function renderAccion() {
   const reading = getOperationalReading();
   const recommendation = getFinalRecommendation();
@@ -351,4 +468,429 @@ export function renderAccion() {
       }
     </section>
   `;
+=======
+<<<<<<< HEAD
+function getCurrentLodgingSuggestion(transportMode) {
+  return getContextualLodgingRecommendation({
+    arrivalType: appState.arrivalType,
+    arrivalData: appState.arrivalData,
+    transportMode
+  });
+}
+
+function getVisibleMapLocations(lodgingSuggestion) {
+  const lodgingById = new Map(
+    (Array.isArray(mockData.lodging) ? mockData.lodging : []).map((item) => [item.id, item])
+  );
+
+  const visiblePins = lodgingSuggestion?.mapPreview?.pins || [];
+
+  const locations = visiblePins
+    .map((pin) => {
+      const source = lodgingById.get(pin.id);
+
+      if (!source?.coordinates) {
+        return null;
+      }
+
+      return {
+        id: pin.id,
+        label: source.label,
+        zoneLabel: source.zoneLabel || source.label,
+        priceText: pin.priceText,
+        coordinates: source.coordinates,
+        isPrimary: pin.isPrimary
+      };
+    })
+    .filter(Boolean);
+
+  if (locations.length > 0) {
+    return locations;
+  }
+
+  if (lodgingSuggestion?.primary?.coordinates) {
+    return [
+      {
+        id: lodgingSuggestion.primary.id,
+        label: lodgingSuggestion.primary.label,
+        zoneLabel: lodgingSuggestion.primary.zoneLabel,
+        priceText: lodgingSuggestion.primary.priceText,
+        coordinates: lodgingSuggestion.primary.coordinates,
+        isPrimary: true
+      }
+    ];
+  }
+
+  return [];
+}
+
+function buildMarkerIcon(location) {
+  const priceText = escapeHtml(location.priceText || "");
+
+  return window.L.divIcon({
+    className: `action-lodging-marker-pill ${location.isPrimary ? "action-lodging-marker-pill--primary" : "action-lodging-marker-pill--secondary"}`,
+    html: `<span>${priceText}</span>`,
+    iconSize: location.isPrimary ? [76, 28] : [72, 26],
+    iconAnchor: [38, 14]
+  });
+}
+
+function renderLodgingMiniMap(lodgingSuggestion) {
+  const locations = getVisibleMapLocations(lodgingSuggestion);
+  const staticMapUrl = buildGoogleStaticMapsUrl(locations, {
+    width: 640,
+    height: 360,
+    variant: "preview"
+  });
+  const shouldUseGoogleStaticMap = Boolean(staticMapUrl);
+
+  return `
+    <div class="action-lodging-preview-map">
+      <div class="action-lodging-preview-map-kicker">
+        <span>${shouldUseGoogleStaticMap ? "Mapa real Google · vista pública" : "Mapa real · vista pública"}</span>
+      </div>
+
+      <div class="action-lodging-preview-map-stage">
+        ${
+          shouldUseGoogleStaticMap
+            ? `
+        <img
+          src="${staticMapUrl}"
+          alt="Vista pública del mapa real de alojamientos sugeridos en Lanzarote"
+          class="action-lodging-static-map-image"
+          loading="lazy"
+          decoding="async"
+        />
+        `
+            : `
+        <div
+          id="action-lodging-leaflet-map"
+          class="action-lodging-leaflet-map"
+          aria-label="Mapa real con alojamientos sugeridos en Lanzarote"
+        ></div>
+        `
+        }
+
+        <div class="action-lodging-preview-map-scrim"></div>
+
+        <div class="action-lodging-preview-map-lock">
+          <p><strong>${lodgingSuggestion.mapPreview.title}</strong></p>
+          <p>${lodgingSuggestion.mapPreview.detail}</p>
+        </div>
+
+        <div class="action-lodging-preview-map-attribution">
+          ${shouldUseGoogleStaticMap ? "Base cartográfica: Google Maps" : "Base cartográfica: OpenStreetMap"}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAlternativeRows(lodgingSuggestion) {
+  const alternatives = lodgingSuggestion?.alternatives || [];
+
+  if (alternatives.length === 0) {
+    return "";
+  }
+
+  return `
+    <div class="action-lodging-preview-card">
+      <p><strong>Otras zonas visibles</strong></p>
+      <ul>
+        ${alternatives
+          .map(
+            (option) => `
+          <li>
+            <strong>${option.label}</strong> · ${option.priceText}/noche<br>
+            <span>${option.reasonLine}</span>
+          </li>
+        `
+          )
+          .join("")}
+      </ul>
+    </div>
+  `;
+}
+
+export function destroyAccionMap() {
+  if (actionPreviewMap) {
+    actionPreviewMap.remove();
+    actionPreviewMap = null;
+  }
+}
+
+export function initAccionMap() {
+  destroyAccionMap();
+
+  if (getGoogleStaticMapsApiKey()) {
+    return;
+  }
+
+  const container = document.getElementById("action-lodging-leaflet-map");
+
+  if (!container || !window.L) {
+    return;
+  }
+
+  const recommendation = getFinalRecommendation();
+  const lodgingSuggestion = getCurrentLodgingSuggestion(recommendation.key);
+  const locations = getVisibleMapLocations(lodgingSuggestion);
+
+  if (!lodgingSuggestion || locations.length === 0) {
+    return;
+  }
+
+  actionPreviewMap = window.L.map(container, {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    touchZoom: false,
+    tap: false,
+    inertia: false
+  });
+
+  window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19
+  }).addTo(actionPreviewMap);
+
+  const bounds = [];
+
+  locations.forEach((location) => {
+    const latlng = [location.coordinates.lat, location.coordinates.lng];
+    bounds.push(latlng);
+
+    window.L.marker(latlng, {
+      icon: buildMarkerIcon(location),
+      interactive: false,
+      keyboard: false
+    }).addTo(actionPreviewMap);
+  });
+
+  if (bounds.length === 1) {
+    actionPreviewMap.setView(bounds[0], 11);
+  } else {
+    actionPreviewMap.fitBounds(bounds, {
+      padding: [26, 26],
+      maxZoom: 11
+    });
+  }
+
+  requestAnimationFrame(() => {
+    if (actionPreviewMap) {
+      actionPreviewMap.invalidateSize();
+    }
+  });
+}
+
+export function renderAccion() {
+  const reading = getOperationalReading();
+  const recommendation = getFinalRecommendation();
+  const immediateAction = getImmediateAction(recommendation);
+  const primaryCta = getPrimaryCta(recommendation);
+  const activatedPlan = getActivatedPlan();
+  const lodgingSuggestion = getCurrentLodgingSuggestion(recommendation.key);
+  const proUnlock = getProUnlockCopy(reading, recommendation);
+
+  const ctaLabel = activatedPlan
+    ? recommendation.key === "taxi"
+      ? "Plan taxi activado"
+      : "Plan bus activado"
+    : primaryCta.label;
+
+  return `
+    <section class="screen screen--base">
+      <h2>Acción</h2>
+      <p>Salida sugerida según el contexto actual.</p>
+
+      <div class="action-reading">
+        <p><strong>Lectura actual:</strong> ${reading.title}</p>
+        <p>${reading.detail}</p>
+      </div>
+
+      <div class="action-recommendation action-recommendation--${recommendation.key}">
+        <p><strong>${recommendation.status}:</strong> ${recommendation.title}</p>
+        <p>${recommendation.reason}</p>
+      </div>
+
+      <div class="action-next-steps">
+        <p><strong>${immediateAction.title}:</strong></p>
+        <ul>
+          ${immediateAction.steps.map((step) => `<li>${step}</li>`).join("")}
+        </ul>
+        <p>${immediateAction.note}</p>
+      </div>
+
+      ${
+        lodgingSuggestion
+          ? `
+      <div class="action-lodging-preview">
+        <p><strong>Mapa y alojamiento</strong></p>
+        <p>${lodgingSuggestion.intro}</p>
+
+        ${renderLodgingMiniMap(lodgingSuggestion)}
+
+        <div class="action-lodging-preview-card">
+          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
+          <p>${lodgingSuggestion.primary.type}</p>
+          <p><strong>Zona:</strong> ${lodgingSuggestion.primary.zoneLabel}</p>
+          <p><strong>Desde:</strong> ${lodgingSuggestion.primary.priceText}/noche</p>
+          <p>${lodgingSuggestion.primary.reasonLine}</p>
+          <p><strong>Lectura pública:</strong> ${lodgingSuggestion.primary.publicNote}</p>
+        </div>
+
+        ${renderAlternativeRows(lodgingSuggestion)}
+
+        <div class="action-lodging-preview-lock">
+          <p><strong>${proUnlock.title}</strong></p>
+          <p>${proUnlock.detail}</p>
+          <ul>
+            ${proUnlock.bullets.map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+          <p><strong>Bloqueado en público:</strong> ${lodgingSuggestion.mapPreview.lockedMessage}</p>
+          <p><strong>Paso natural:</strong> entra en Pro si necesitas decidir bien la zona antes de moverte o reservar.</p>
+          <p>${proUnlock.closing}</p>
+        </div>
+      </div>
+      `
+          : ""
+      }
+
+      <div class="action-primary-cta">
+        <p><strong>${primaryCta.title}:</strong></p>
+        <button id="action-primary-cta-btn" type="button" data-action-mode="${recommendation.key}">
+          ${ctaLabel}
+        </button>
+        <p>${primaryCta.hint}</p>
+        <p>${primaryCta.support}</p>
+        <p><strong>${primaryCta.fallbackTitle}:</strong> ${primaryCta.fallbackText}</p>
+      </div>
+
+      ${
+        activatedPlan
+          ? `
+      <div class="action-activated-plan action-activated-plan--${activatedPlan.key}">
+        <p><strong>${activatedPlan.title}:</strong> ${activatedPlan.headline}</p>
+        <ul>
+          ${activatedPlan.steps.map((step) => `<li>${step}</li>`).join("")}
+        </ul>
+        <p>${activatedPlan.note}</p>
+      </div>
+      `
+          : ""
+      }
+    </section>
+  `;
+=======
+export function renderAccion() {
+  const reading = getOperationalReading();
+  const recommendation = getFinalRecommendation();
+  const immediateAction = getImmediateAction(recommendation);
+  const primaryCta = getPrimaryCta(recommendation);
+  const activatedPlan = getActivatedPlan();
+  const lodgingSuggestion = getContextualLodgingRecommendation({
+    arrivalType: appState.arrivalType,
+    arrivalData: appState.arrivalData,
+    transportMode: recommendation.key
+  });
+  const proUnlock = getProUnlockCopy(reading, recommendation);
+
+  const ctaLabel = activatedPlan
+    ? recommendation.key === "taxi"
+      ? "Plan taxi activado"
+      : "Plan bus activado"
+    : primaryCta.label;
+
+  return `
+    <section class="screen screen--base">
+      <h2>Acción</h2>
+      <p>Salida sugerida según el contexto actual.</p>
+
+      <div class="action-reading">
+        <p><strong>Lectura actual:</strong> ${reading.title}</p>
+        <p>${reading.detail}</p>
+      </div>
+
+      <div class="action-recommendation action-recommendation--${recommendation.key}">
+        <p><strong>${recommendation.status}:</strong> ${recommendation.title}</p>
+        <p>${recommendation.reason}</p>
+      </div>
+
+      <div class="action-next-steps">
+        <p><strong>${immediateAction.title}:</strong></p>
+        <ul>
+          ${immediateAction.steps.map((step) => `<li>${step}</li>`).join("")}
+        </ul>
+        <p>${immediateAction.note}</p>
+      </div>
+
+      ${
+        lodgingSuggestion
+          ? `
+      <div class="action-lodging-preview">
+        <p><strong>Mapa y alojamiento</strong></p>
+        <p>${lodgingSuggestion.intro}</p>
+
+        <div class="action-lodging-preview-map" aria-hidden="true">
+          <div class="action-lodging-preview-pin action-lodging-preview-pin--primary"></div>
+          <div class="action-lodging-preview-pin action-lodging-preview-pin--secondary"></div>
+          <div class="action-lodging-preview-pin action-lodging-preview-pin--secondary action-lodging-preview-pin--bottom"></div>
+
+          <div class="action-lodging-preview-overlay">
+            <p><strong>Vista pública</strong></p>
+            <p>Ves la zona y el precio base, pero no el mapa completo.</p>
+          </div>
+        </div>
+
+        <div class="action-lodging-preview-card">
+          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
+          <p>${lodgingSuggestion.primary.type}</p>
+          <p><strong>Desde:</strong> ${lodgingSuggestion.primary.priceText}/noche</p>
+          <p>${lodgingSuggestion.primary.reasonLine}</p>
+        </div>
+
+        <div class="action-lodging-preview-lock">
+          <p><strong>${proUnlock.title}</strong></p>
+          <p>${proUnlock.detail}</p>
+          <ul>
+            ${proUnlock.bullets.map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+          <p><strong>Paso natural:</strong> entra en Pro si necesitas decidir bien la zona antes de moverte o reservar.</p>
+          <p>${proUnlock.closing}</p>
+        </div>
+      </div>
+      `
+          : ""
+      }
+
+      <div class="action-primary-cta">
+        <p><strong>${primaryCta.title}:</strong></p>
+        <button id="action-primary-cta-btn" type="button" data-action-mode="${recommendation.key}">
+          ${ctaLabel}
+        </button>
+        <p>${primaryCta.hint}</p>
+        <p>${primaryCta.support}</p>
+        <p><strong>${primaryCta.fallbackTitle}:</strong> ${primaryCta.fallbackText}</p>
+      </div>
+
+      ${
+        activatedPlan
+          ? `
+      <div class="action-activated-plan action-activated-plan--${activatedPlan.key}">
+        <p><strong>${activatedPlan.title}:</strong> ${activatedPlan.headline}</p>
+        <ul>
+          ${activatedPlan.steps.map((step) => `<li>${step}</li>`).join("")}
+        </ul>
+        <p>${activatedPlan.note}</p>
+      </div>
+      `
+          : ""
+      }
+    </section>
+  `;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }

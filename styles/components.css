@@ -2,6 +2,7 @@ h1,
 h2 {
   line-height: 1.2;
   margin-bottom: 8px;
+  color: var(--text);
 }
 
 h1 {
@@ -15,43 +16,136 @@ h2 {
 p {
   color: var(--muted);
   font-size: 1rem;
+  line-height: 1.5;
 }
 
 nav.screen {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #f8fafc;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 button {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface);
   color: var(--text);
-  padding: 10px 12px;
+  padding: 11px 14px;
   text-align: center;
   cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    opacity 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:hover {
-  opacity: 0.96;
+  opacity: 1;
+  border-color: #cbd5e1;
+}
+
+button:active {
+  transform: scale(0.985);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+nav.screen button {
+  min-height: 44px;
+  border-color: transparent;
+  background: transparent;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+nav.screen button:hover {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+nav.screen button[aria-current="page"],
+nav.screen button.is-active {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
 .arrival-options {
   display: grid;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 18px;
+}
+
+.arrival-options button {
+  position: relative;
+  text-align: left;
+  justify-content: flex-start;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border-color: #dbe2ea;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.arrival-options button:hover {
+  border-color: #c8d1dc;
+  background: #fcfdff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.arrival-options button[aria-pressed="true"],
+.arrival-options button.is-active {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
 }
 
 .arrival-details {
   margin-top: 16px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #f9fafb;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
+}
+
+.arrival-details > p:first-child {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .arrival-details p + p {
@@ -66,18 +160,65 @@ button:hover {
 
 .arrival-form label {
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.94rem;
+  font-weight: 600;
 }
 
 .arrival-form input,
 .arrival-form select {
   width: 100%;
-  min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
+  min-height: 48px;
+  border: 1px solid #d7dee7;
+  border-radius: 14px;
+  background: #ffffff;
   color: var(--text);
+<<<<<<< HEAD
+  padding: 12px 14px;
+  font: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  appearance: none;
+}
+
+.arrival-form input[type="time"] {
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.arrival-validation {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.arrival-validation p {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.arrival-actions {
+  margin-top: 16px;
+}
+
+.arrival-actions button {
+  min-height: 50px;
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+.arrival-actions button:hover:not(:disabled) {
+  background: #111c30;
+  border-color: #111c30;
+=======
   padding: 10px 12px;
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .radar-summary,
@@ -90,9 +231,21 @@ button:hover {
   margin-top: 16px;
   padding: 16px;
   border: 1px solid var(--border);
+<<<<<<< HEAD
   border-radius: 16px;
   background: #f9fafb;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+=======
+<<<<<<< HEAD
+  border-radius: 18px;
+  background: #f9fafb;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+=======
+  border-radius: 16px;
+  background: #f9fafb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .radar-summary p + p,
@@ -126,7 +279,15 @@ button:hover {
 .radar-signals li,
 .decision-context li {
   color: var(--text);
+<<<<<<< HEAD
   line-height: 1.45;
+=======
+<<<<<<< HEAD
+  line-height: 1.48;
+=======
+  line-height: 1.45;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .radar-summary li + li,
@@ -135,11 +296,24 @@ button:hover {
   margin-top: 8px;
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+.radar-operational,
+.radar-signals,
+.decision-base,
+.decision-comparison {
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 .radar-operational {
   background: #ffffff;
 }
 
 .radar-signals {
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   background: #ffffff;
 }
 
@@ -151,7 +325,15 @@ button:hover {
 .radar-actions button,
 .decision-actions button {
   min-height: 48px;
+<<<<<<< HEAD
   font-weight: 600;
+=======
+<<<<<<< HEAD
+  font-weight: 700;
+=======
+  font-weight: 600;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .decision-options {
@@ -163,8 +345,19 @@ button:hover {
 .decision-option {
   padding: 14px;
   border: 1px solid #dfe5ec;
+<<<<<<< HEAD
   border-radius: 14px;
   background: #ffffff;
+=======
+<<<<<<< HEAD
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+=======
+  border-radius: 14px;
+  background: #ffffff;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .decision-option p + p {
@@ -199,6 +392,24 @@ button:hover {
 .action-recommendation,
 .action-next-steps,
 .action-primary-cta,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+.action-activated-plan,
+.action-lodging-preview,
+.pro-lodging-unlocked {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+.action-reading {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 .action-activated-plan {
   margin-top: 16px;
   padding: 16px;
@@ -206,13 +417,27 @@ button:hover {
   border-radius: 16px;
   background: #f9fafb;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-reading p + p,
 .action-recommendation p + p,
 .action-next-steps p + p,
 .action-primary-cta p + p,
+<<<<<<< HEAD
 .action-activated-plan p + p {
+=======
+<<<<<<< HEAD
+.action-activated-plan p + p,
+.action-lodging-preview p + p,
+.pro-lodging-unlocked p + p {
+=======
+.action-activated-plan p + p {
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   margin-top: 8px;
 }
 
@@ -220,17 +445,62 @@ button:hover {
 .action-recommendation strong,
 .action-next-steps strong,
 .action-primary-cta strong,
+<<<<<<< HEAD
 .action-activated-plan strong {
+=======
+<<<<<<< HEAD
+.action-activated-plan strong,
+.action-lodging-preview strong,
+.pro-lodging-unlocked strong {
+=======
+.action-activated-plan strong {
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   color: var(--text);
 }
 
 .action-next-steps ul,
+<<<<<<< HEAD
 .action-activated-plan ul {
+=======
+<<<<<<< HEAD
+.action-activated-plan ul,
+.action-lodging-preview ul {
+=======
+.action-activated-plan ul {
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   margin: 12px 0 0;
   padding-left: 18px;
 }
 
 .action-next-steps li,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+.action-activated-plan li,
+.action-lodging-preview li {
+  color: var(--text);
+  line-height: 1.48;
+}
+
+.action-next-steps li + li,
+.action-activated-plan li + li,
+.action-lodging-preview li + li {
+  margin-top: 8px;
+}
+
+.action-recommendation {
+  border-width: 1px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.action-recommendation + .action-next-steps {
+  border-color: #d7dee7;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 .action-activated-plan li {
   color: var(--text);
   line-height: 1.45;
@@ -245,6 +515,10 @@ button:hover {
   border-color: #cfd8e3;
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-recommendation + .action-next-steps strong {
@@ -266,32 +540,272 @@ button:hover {
 }
 
 .action-primary-cta {
+<<<<<<< HEAD
   background: #ffffff;
+=======
+<<<<<<< HEAD
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+=======
+  background: #ffffff;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-primary-cta button {
   margin-top: 12px;
+<<<<<<< HEAD
   min-height: 48px;
   font-weight: 600;
+=======
+<<<<<<< HEAD
+  min-height: 50px;
+  font-weight: 700;
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+.action-primary-cta button:hover:not(:disabled) {
+  background: #111c30;
+  border-color: #111c30;
+=======
+  min-height: 48px;
+  font-weight: 600;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-primary-cta p:last-child,
 .action-activated-plan p:last-child,
 .action-next-steps p:last-child,
 .action-reading p:last-child,
+<<<<<<< HEAD
 .action-recommendation p:last-child {
+=======
+<<<<<<< HEAD
+.action-recommendation p:last-child,
+.action-lodging-preview p:last-child,
+.pro-lodging-unlocked p:last-child {
+=======
+.action-recommendation p:last-child {
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   margin-bottom: 0;
 }
 
 .action-recommendation--taxi,
 .action-activated-plan--taxi {
   border-color: #d6dbe3;
+<<<<<<< HEAD
   background: #f8fafc;
+=======
+<<<<<<< HEAD
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+=======
+  background: #f8fafc;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-recommendation--bus,
 .action-activated-plan--bus {
   border-color: #dde3ea;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  background: linear-gradient(180deg, #fbfcfd 0%, #ffffff 100%);
+}
+
+.action-lodging-preview,
+.pro-lodging-unlocked {
+  overflow: hidden;
+}
+
+.action-lodging-preview {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.action-lodging-preview-map {
+  position: relative;
+  margin-top: 14px;
+}
+
+.action-lodging-preview-map-stage {
+  position: relative;
+  min-height: 260px;
+  border: 1px solid #d8e1ea;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #dfe7ee;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.action-lodging-preview-map-kicker {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+}
+
+.action-lodging-preview-map-kicker span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+
+.action-lodging-leaflet-map,
+.action-lodging-static-map-image {
+  width: 100%;
+  height: 260px;
+  background: #dfe7ee;
+}
+
+.action-lodging-static-map-image,
+.pro-lodging-static-map-image {
+  display: block;
+  object-fit: cover;
+}
+
+.action-lodging-leaflet-map .leaflet-tile {
+  filter: saturate(0.94) contrast(1.02);
+}
+
+.action-lodging-preview-map-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 26%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 34%);
+}
+
+.action-lodging-preview-map-lock {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 34px;
+  z-index: 5;
+  padding: 12px 13px;
+  border: 1px solid rgba(223, 229, 236, 0.92);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.action-lodging-preview-map-lock p + p {
+  margin-top: 4px;
+}
+
+.action-lodging-preview-map-attribution,
+.pro-lodging-unlocked-attribution {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #475569;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.action-lodging-marker-pill {
+  background: transparent;
+  border: none;
+}
+
+.action-lodging-marker-pill span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+  font-size: 0.76rem;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+
+.action-lodging-marker-pill--primary span {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.pro-lodging-unlocked-map {
+  position: relative;
+  min-height: 210px;
+  margin-top: 14px;
+  border: 1px solid #dfe5ec;
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.12)),
+    radial-gradient(circle at 20% 20%, rgba(203, 213, 225, 0.4), transparent 26%),
+    radial-gradient(circle at 80% 30%, rgba(226, 232, 240, 0.55), transparent 22%),
+    linear-gradient(135deg, #eef4f8 0%, #f8fafc 48%, #e9f1f7 100%);
+}
+
+.pro-lodging-unlocked-map--real {
+  background: #dfe7ee;
+}
+
+.pro-lodging-static-map-image {
+  width: 100%;
+  min-height: 210px;
+  height: 100%;
+}
+
+.pro-lodging-unlocked-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 42px 42px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.pro-lodging-unlocked-map::after {
+  content: "";
+  position: absolute;
+  inset: 16px 22% 22px 14px;
+  border-radius: 999px 60% 55% 999px;
+  background: linear-gradient(180deg, rgba(214, 234, 248, 0.72), rgba(191, 219, 254, 0.3));
+  filter: blur(0.3px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pro-lodging-unlocked-map--real::before,
+.pro-lodging-unlocked-map--real::after {
+  display: none;
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   background: #fbfcfd;
 }
 
@@ -380,6 +894,10 @@ button:hover {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(4px);
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .action-lodging-preview-card,
@@ -389,31 +907,94 @@ button:hover {
   margin-top: 12px;
   padding: 14px;
   border: 1px solid #e2e8f0;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  border-radius: 15px;
+  background: #f8fafc;
+}
+
+.action-lodging-preview-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.action-lodging-preview-lock {
+  background: linear-gradient(180deg, #f8fafc 0%, #e9eff5 100%);
+}
+
+.action-lodging-preview-card ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.action-lodging-preview-card li + li {
+  margin-top: 8px;
+}
+
+.action-lodging-preview-card span {
+  color: var(--muted);
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   border-radius: 14px;
   background: #f8fafc;
 }
 
 .action-lodging-preview-lock {
   background: #f1f5f9;
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .pro-lodging-unlocked-badge {
   position: absolute;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  z-index: 3;
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   top: 12px;
   left: 12px;
   display: inline-flex;
   align-items: center;
+<<<<<<< HEAD
   min-height: 32px;
+=======
+<<<<<<< HEAD
+  min-height: 34px;
+=======
+  min-height: 32px;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.92);
   color: #ffffff;
   font-size: 0.82rem;
+<<<<<<< HEAD
   font-weight: 600;
+=======
+<<<<<<< HEAD
+  font-weight: 700;
+  letter-spacing: 0.01em;
+=======
+  font-weight: 600;
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .pro-lodging-unlocked-grid {
   position: absolute;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  z-index: 3;
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   left: 12px;
   right: 12px;
   bottom: 12px;
@@ -424,17 +1005,51 @@ button:hover {
 .pro-lodging-unlocked-spot {
   padding: 12px;
   border: 1px solid rgba(223, 229, 236, 0.9);
+<<<<<<< HEAD
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(4px);
+=======
+<<<<<<< HEAD
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+=======
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
 
 .pro-lodging-unlocked-spot--primary {
   border-color: #cbd5e1;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  background: rgba(248, 250, 252, 0.97);
+}
+
+@media (min-width: 768px) {
+  nav.screen {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .arrival-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   background: rgba(248, 250, 252, 0.96);
 }
 
 @media (min-width: 768px) {
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   .action-reading,
   .action-recommendation,
   .action-next-steps,
@@ -444,9 +1059,39 @@ button:hover {
   .pro-lodging-unlocked {
     padding: 18px;
   }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  .action-lodging-leaflet-map,
+  .action-lodging-static-map-image {
+    height: 300px;
+  }
+
+  .pro-lodging-static-map-image {
+    min-height: 300px;
+  }
+
+  .action-lodging-preview-map-stage,
+  .pro-lodging-unlocked-map {
+    min-height: 300px;
+  }
+}
+  .action-lodging-leaflet-map {
+    height: 300px;
+  }
+
+  .action-lodging-preview-map-stage,
+  .pro-lodging-unlocked-map {
+    min-height: 300px;
+=======
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 
   .action-lodging-preview-map,
   .pro-lodging-unlocked-map {
     min-height: 210px;
+<<<<<<< HEAD
+=======
+>>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
+>>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
   }
 }

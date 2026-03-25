@@ -8,11 +8,19 @@
   <link rel="stylesheet" href="styles/reset.css" />
   <link rel="stylesheet" href="styles/base.css" />
   <link rel="stylesheet" href="styles/layout.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
   <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
   <div id="app"></div>
 
+  <script>
+    window.APP_GOOGLE_MAPS_STATIC_API_KEY = window.APP_GOOGLE_MAPS_STATIC_API_KEY || "";
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

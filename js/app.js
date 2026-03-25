@@ -3,7 +3,7 @@ import { routes } from "./routes.js";
 import { renderLlegada } from "./modules/llegada.js";
 import { renderRadar } from "./modules/radar.js";
 import { renderDecision } from "./modules/decision.js";
-import { renderAccion } from "./modules/accion.js";
+import { renderAccion, initAccionMap, destroyAccionMap } from "./modules/accion.js";
 import { renderPro } from "./modules/pro.js";
 
 const app = document.getElementById("app");
@@ -49,7 +49,12 @@ function renderNav() {
       ${navItems
         .map(
           (item) => `
-            <button type="button" data-route="${item.key}">
+            <button
+              type="button"
+              data-route="${item.key}"
+              class="${appState.currentRoute === item.key ? "is-active" : ""}"
+              ${appState.currentRoute === item.key ? 'aria-current="page"' : ""}
+            >
               ${item.label}
             </button>
           `
@@ -59,8 +64,81 @@ function renderNav() {
   `;
 }
 
+function isArrivalValid() {
+  if (appState.arrivalType === "vuelo") {
+    return Boolean(
+      appState.arrivalData.flight.airport &&
+      appState.arrivalData.flight.time &&
+      appState.arrivalData.flight.passengers
+    );
+  }
+
+  if (appState.arrivalType === "crucero") {
+    return Boolean(
+      appState.arrivalData.cruise.port &&
+      appState.arrivalData.cruise.time &&
+      appState.arrivalData.cruise.passengers
+    );
+  }
+
+  if (appState.arrivalType === "manual") {
+    return Boolean(
+      appState.arrivalData.manual.location.trim() &&
+      appState.arrivalData.manual.area &&
+      appState.arrivalData.manual.time &&
+      appState.arrivalData.manual.passengers
+    );
+  }
+
+  return false;
+}
+
+function canAccessRoute(route) {
+  if (route === routes.home || route === routes.llegada) {
+    return true;
+  }
+
+  return isArrivalValid();
+}
+
+function syncArrivalUi() {
+  if (appState.currentRoute !== routes.llegada) {
+    return;
+  }
+
+  const validationText = document.querySelector(".arrival-validation p");
+  const continueButton = document.querySelector("[data-arrival-continue]");
+  const isValid = isArrivalValid();
+
+  if (validationText) {
+    validationText.textContent = isValid
+      ? "Datos mínimos completos."
+      : "Faltan datos mínimos por completar.";
+  }
+
+  if (continueButton) {
+    continueButton.disabled = !isValid;
+  }
+}
+
+function runViewEffects() {
+  if (appState.currentRoute === routes.llegada) {
+    requestAnimationFrame(() => {
+      syncArrivalUi();
+    });
+  }
+
+  if (appState.currentRoute === routes.accion) {
+    requestAnimationFrame(() => {
+      initAccionMap();
+    });
+  }
+}
+
 function renderApp() {
   if (!app) return;
+
+  destroyAccionMap();
 
   app.innerHTML = `
     <main class="app-shell">
@@ -68,6 +146,65 @@ function renderApp() {
       ${getCurrentView()}
     </main>
   `;
+
+  runViewEffects();
+}
+
+function isArrivalValid() {
+  if (appState.arrivalType === "vuelo") {
+    return Boolean(
+      appState.arrivalData.flight.airport &&
+      appState.arrivalData.flight.time &&
+      appState.arrivalData.flight.passengers
+    );
+  }
+
+  if (appState.arrivalType === "crucero") {
+    return Boolean(
+      appState.arrivalData.cruise.port &&
+      appState.arrivalData.cruise.time &&
+      appState.arrivalData.cruise.passengers
+    );
+  }
+
+  if (appState.arrivalType === "manual") {
+    return Boolean(
+      appState.arrivalData.manual.location.trim() &&
+      appState.arrivalData.manual.area &&
+      appState.arrivalData.manual.time &&
+      appState.arrivalData.manual.passengers
+    );
+  }
+
+  return false;
+}
+
+function canAccessRoute(route) {
+  if (route === routes.home || route === routes.llegada) {
+    return true;
+  }
+
+  return isArrivalValid();
+}
+
+function syncArrivalUi() {
+  if (appState.currentRoute !== routes.llegada) {
+    return;
+  }
+
+  const validationText = document.querySelector(".arrival-validation p");
+  const continueButton = document.querySelector("[data-arrival-continue]");
+  const isValid = isArrivalValid();
+
+  if (validationText) {
+    validationText.textContent = isValid
+      ? "Datos mínimos completos."
+      : "Faltan datos mínimos por completar.";
+  }
+
+  if (continueButton) {
+    continueButton.disabled = !isValid;
+  }
 }
 
 function isArrivalValid() {
