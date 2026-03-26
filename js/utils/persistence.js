@@ -9,6 +9,7 @@ export function saveState(appState) {
       actionExecution: appState.actionExecution,
       selectedLodgingId: appState.selectedLodgingId,
       selectedLodgingSource: appState.selectedLodgingSource,
+      proFilters: appState.proFilters,
       ui: {
         dismissedInstall: appState.ui?.dismissedInstall || false
       }
@@ -35,6 +36,7 @@ export function restoreState(appState) {
 
     if (saved.selectedLodgingId) appState.selectedLodgingId = saved.selectedLodgingId;
     if (saved.selectedLodgingSource) appState.selectedLodgingSource = saved.selectedLodgingSource;
+    if (saved.proFilters) Object.assign(appState.proFilters, saved.proFilters);
     if (saved.ui) Object.assign(appState.ui, saved.ui);
 
     return true;

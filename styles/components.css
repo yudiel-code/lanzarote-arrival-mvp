@@ -77,7 +77,8 @@
 .arrival-options button,
 .button,
 .stay-option,
-.pro-compare-row {
+.pro-compare-row,
+.pro-result-card {
   border: 0;
   border-radius: 1rem;
   transition: transform var(--t-fast), background var(--t-fast), box-shadow var(--t-fast), color var(--t-fast), border-color var(--t-fast);
@@ -98,7 +99,8 @@
 .arrival-options button.is-active,
 .progress-pill.is-active,
 .stay-option.is-active,
-.pro-compare-row.is-active {
+.pro-compare-row.is-active,
+.pro-result-card.is-active {
   background: var(--c-navy);
   color: #fff;
   box-shadow: 0 10px 22px rgba(17, 38, 63, 0.18);
@@ -196,7 +198,9 @@
 .route-snapshot,
 .route-snapshot__grid,
 .comparison-grid,
-.stay-selector-grid {
+.stay-selector-grid,
+.pro-results-grid,
+.pro-filters-card {
   display: grid;
   gap: var(--space-md);
 }
@@ -215,7 +219,8 @@
 .strategy-card,
 .comparison-table-card,
 .signals-card,
-.route-snapshot {
+.route-snapshot,
+.pro-filters-card {
   padding: 1.05rem 1.1rem;
   border-radius: 1.3rem;
   border: 1px solid var(--c-border);
@@ -240,7 +245,9 @@
 .arrival-helper-grid,
 .route-snapshot__grid,
 .comparison-grid,
-.stay-facts-grid {
+.stay-facts-grid,
+.pro-filters-grid,
+.pro-result-meta {
   display: grid;
   gap: 0.8rem;
 }
@@ -252,7 +259,8 @@
 .feature-card,
 .helper-card,
 .mini-zone-card,
-.compare-card {
+.compare-card,
+.pro-result-card {
   padding: 1rem;
   border-radius: 1.15rem;
   border: 1px solid var(--c-border);
@@ -273,7 +281,9 @@
 .narrative-card p,
 .route-snapshot p,
 .route-snapshot li,
-.signals-card li {
+.signals-card li,
+.pro-result-card p,
+.pro-result-meta span {
   color: var(--c-text-muted);
 }
 
@@ -437,7 +447,8 @@
 }
 
 .weather-grid,
-.stay-facts-grid {
+.stay-facts-grid,
+.pro-filters-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -569,6 +580,32 @@
   transform: scale(1.12);
 }
 
+.map-price-marker {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 5.2rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 0.95rem 0.95rem 0.95rem 0.2rem;
+  background: rgba(17, 38, 63, 0.96);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(17, 38, 63, 0.24);
+}
+
+.map-price-marker strong {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.map-price-marker small {
+  font-size: 0.62rem;
+  line-height: 1.1;
+  opacity: 0.84;
+}
+
+.map-price-marker.is-active {
+  background: var(--c-terra);
+}
+
 .stay-selector-grid,
 .comparison-grid,
 .route-snapshot__grid {
@@ -601,9 +638,25 @@
   opacity: 0.8;
 }
 
-.pro-compare-list {
+.pro-compare-list,
+.pro-results-grid {
   display: grid;
   gap: 0.65rem;
+}
+
+.pro-results-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pro-result-card {
+  display: grid;
+  gap: 0.7rem;
+  text-align: left;
+}
+
+.pro-result-meta {
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
 }
 
 .pro-compare-row {
@@ -645,7 +698,9 @@
   .route-snapshot__grid,
   .weather-grid,
   .stay-facts-grid,
-  .arrival-form-grid {
+  .arrival-form-grid,
+  .pro-filters-grid,
+  .pro-results-grid {
     grid-template-columns: 1fr;
   }
 
@@ -666,11 +721,11 @@
   .button:hover,
   .link-chip:hover,
   .stay-option:hover,
-  .pro-compare-row:hover {
+  .pro-compare-row:hover,
+  .pro-result-card:hover {
     transform: translateY(-1px);
   }
 }
-
 
 .pro-plan-grid {
   display: grid;

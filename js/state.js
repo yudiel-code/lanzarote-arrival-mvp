@@ -14,6 +14,12 @@ export const appState = {
   selectedLodgingId: null,
   selectedLodgingSource: 'action',
   actionExecution: { active: false, mode: null },
+  proFilters: {
+    zone: 'all',
+    type: 'all',
+    maxPrice: '',
+    sort: 'recommended'
+  },
   ui: {
     offline: typeof navigator !== 'undefined' ? !navigator.onLine : false,
     installPromptAvailable: false,

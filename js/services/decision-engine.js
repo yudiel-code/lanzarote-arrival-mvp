@@ -117,33 +117,39 @@ export function recommendTransferMode(context, arrivalType, arrivalData, shortli
   };
 }
 
-export function buildRecommendation(context, arrivalType, arrivalData, preferredMode = null) {
+export function buildScoredLodgingCatalog(context, arrivalType, arrivalData, preferredMode = null) {
   const lodging = Array.isArray(mockData.lodging) ? mockData.lodging : [];
-  if (!lodging.length || !context) return null;
+  if (!lodging.length || !context) return [];
 
   const transportSeed = preferredMode || 'taxi';
   const initialScored = lodging
     .map((option) => scoreOption(option, context, arrivalType, arrivalData, transportSeed))
     .sort((a, b) => b.score - a.score);
 
-  const transferRecommendation = preferredMode
-    ? recommendTransferMode(context, arrivalType, arrivalData, initialScored)
-    : recommendTransferMode(context, arrivalType, arrivalData, initialScored);
-
+  const transferRecommendation = recommendTransferMode(context, arrivalType, arrivalData, initialScored);
   const finalMode = preferredMode || transferRecommendation.mode;
-  const rescored = lodging
-    .map((option) => scoreOption(option, context, arrivalType, arrivalData, finalMode))
-    .sort((a, b) => b.score - a.score);
 
-  const shortlist = rescored.slice(0, 4);
+  return lodging
+    .map((option) => scoreOption(option, context, arrivalType, arrivalData, finalMode))
+    .sort((a, b) => b.score - a.score)
+    .map((option) => formatOption(option, context));
+}
+
+export function buildRecommendation(context, arrivalType, arrivalData, preferredMode = null) {
+  const scoredCatalog = buildScoredLodgingCatalog(context, arrivalType, arrivalData, preferredMode);
+  if (!scoredCatalog.length || !context) return null;
+
+  const transferRecommendation = recommendTransferMode(context, arrivalType, arrivalData, scoredCatalog);
+  const shortlist = scoredCatalog.slice(0, 4);
   const primary = shortlist[0];
   const alternatives = shortlist.slice(1, 4);
 
   return {
     transferRecommendation,
-    primary: formatOption(primary, context),
-    alternatives: alternatives.map((option) => formatOption(option, context)),
-    shortlist: shortlist.map((option) => formatOption(option, context)),
+    primary,
+    alternatives,
+    shortlist,
+    allOptions: scoredCatalog,
     meta: {
       arrivalKey: context.arrivalKey,
       weather: context.weather

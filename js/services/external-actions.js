@@ -32,6 +32,11 @@ export function buildBookingSearchUrl({ label, zoneLabel }) {
   return `https://www.booking.com/searchresults.html?ss=${encodeQuery(search)}`;
 }
 
+export function buildBookingPropertyLikeUrl(lodging) {
+  if (!lodging) return null;
+  return buildBookingSearchUrl({ label: lodging.label, zoneLabel: lodging.zoneLabel });
+}
+
 export function buildGoogleTravelLinks({ lodging, arrivalKey, travelmode = 'driving' }) {
   if (!lodging?.coordinates) return null;
   const origin = arrivalKey ? ARRIVAL_POINTS[arrivalKey] : null;
@@ -44,7 +49,7 @@ export function buildGoogleTravelLinks({ lodging, arrivalKey, travelmode = 'driv
       originCoords: origin ? { lat: origin.lat, lng: origin.lng } : null
     }),
     areaSearch: buildMapsSearchUrl(`${lodging.label}, Lanzarote`),
-    booking: buildBookingSearchUrl({ label: lodging.label, zoneLabel: lodging.zoneLabel }),
+    booking: buildBookingPropertyLikeUrl(lodging),
     walkingArea: buildMapsDirectionsUrl({
       destinationCoords: lodging.coordinates,
       travelmode: 'walking',
@@ -135,7 +140,7 @@ export function buildLodgingActionSet({ lodging, arrivalKey, hasDirectBus }) {
     },
     {
       key: 'booking',
-      label: 'Buscar en Booking',
+      label: 'Abrir en Booking',
       url: mapLinks?.booking,
       kind: 'secondary'
     },

@@ -289,6 +289,7 @@ function resetPlan() {
   appState.selectedLodgingId = null;
   appState.selectedLodgingSource = 'action';
   appState.actionExecution = { active: false, mode: null };
+  appState.proFilters = { zone: 'all', type: 'all', maxPrice: '', sort: 'recommended' };
 }
 
 function handleRouteChange(nextRoute) {
@@ -320,6 +321,11 @@ function updateField(target) {
   if (id === 'manual-area') { appState.arrivalData.manual.area = value; touchedArrivalField = true; }
   if (id === 'manual-time') { appState.arrivalData.manual.time = value; touchedArrivalField = true; }
   if (id === 'manual-passengers') { appState.arrivalData.manual.passengers = value; touchedArrivalField = true; }
+
+  if (id === 'pro-filter-zone') appState.proFilters.zone = value || 'all';
+  if (id === 'pro-filter-type') appState.proFilters.type = value || 'all';
+  if (id === 'pro-filter-max-price') appState.proFilters.maxPrice = value;
+  if (id === 'pro-filter-sort') appState.proFilters.sort = value || 'recommended';
 
   if (touchedArrivalField) invalidateOperationalContext();
   renderApp();
