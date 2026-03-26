@@ -1,11 +1,12 @@
 #app {
   width: 100%;
+  min-height: 100vh;
 }
 
 .app-shell {
-  width: 100%;
-  min-height: 100vh;
-  padding: 16px;
+  width: min(100%, 46rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 1.5rem) clamp(0.9rem, 3vw, 1.2rem) calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 .screen {
@@ -13,11 +14,27 @@
 }
 
 .screen--base {
-  max-width: 640px;
-  margin: 0 auto;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px 20px;
+  display: grid;
+  gap: var(--space-lg);
+  padding: clamp(1.1rem, 3vw, 1.5rem);
+  border: 1px solid var(--c-border);
+  border-radius: clamp(1.3rem, 4vw, 1.8rem);
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,250,244,0.92));
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-md);
+}
+
+.screen--home {
+  gap: var(--space-xl);
+}
+
+@media (min-width: 860px) {
+  .app-shell {
+    width: min(100%, 56rem);
+    padding-top: 1.5rem;
+  }
+
+  .screen--base {
+    padding: 1.6rem;
+  }
 }

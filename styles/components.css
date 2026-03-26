@@ -1,1097 +1,713 @@
-h1,
-h2 {
-  line-height: 1.2;
-  margin-bottom: 8px;
-  color: var(--text);
-}
-
-h1 {
-  font-size: 1.75rem;
-}
-
-h2 {
-  font-size: 1.25rem;
-}
-
-p {
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-nav.screen {
+.app-topbar {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: #f8fafc;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-navy-2) 55%, #284a71 100%);
+  color: var(--c-text-on-dark);
+  box-shadow: var(--shadow-lg);
 }
 
-button {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface);
-  color: var(--text);
-  padding: 11px 14px;
-  text-align: center;
-  cursor: pointer;
-  font: inherit;
+.app-topbar h1,
+.app-topbar p,
+.app-topbar button {
+  color: inherit;
+}
+
+.app-topbar__eyebrow,
+.module-kicker,
+.feature-card__eyebrow,
+.helper-card__eyebrow,
+.weather-card__eyebrow,
+.recommendation-card__eyebrow,
+.narrative-card__eyebrow,
+.plan-card__eyebrow,
+.summary-card__title,
+.signals-card__title,
+.route-snapshot__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-soft);
+}
+
+.app-topbar__eyebrow {
+  color: rgba(255,255,255,0.68);
+}
+
+.app-topbar__subtitle {
+  max-width: 34rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.app-topbar__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.app-nav {
+  position: sticky;
+  top: 0.55rem;
+  z-index: 25;
+  display: grid;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding: 0.8rem;
+  border: 1px solid rgba(17, 38, 63, 0.08);
+  border-radius: var(--r-xl);
+  background: rgba(252, 248, 242, 0.84);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-nav__routes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.app-nav button,
+.lang-btn,
+.progress-pill,
+.arrival-options button,
+.button,
+.stay-option,
+.pro-compare-row {
+  border: 0;
+  border-radius: 1rem;
+  transition: transform var(--t-fast), background var(--t-fast), box-shadow var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+
+.app-nav__routes button,
+.lang-btn {
+  min-height: 2.7rem;
+  padding: 0.7rem 0.85rem;
+  background: rgba(17, 38, 63, 0.04);
+  color: var(--c-text-muted);
+  font-size: 0.88rem;
   font-weight: 600;
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease,
-    opacity 0.18s ease;
-  -webkit-tap-highlight-color: transparent;
 }
 
-button:hover {
-  opacity: 1;
-  border-color: #cbd5e1;
+.app-nav__routes button.is-active,
+.lang-btn.is-active,
+.arrival-options button.is-active,
+.progress-pill.is-active,
+.stay-option.is-active,
+.pro-compare-row.is-active {
+  background: var(--c-navy);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(17, 38, 63, 0.18);
 }
 
-button:active {
-  transform: scale(0.985);
+.lang-switcher {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: flex-end;
 }
 
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: none;
-  border-color: #0f172a;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+.progress-strip {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.15rem 0 0.35rem;
+  margin-bottom: var(--space-md);
+  scrollbar-width: none;
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.52;
-  background: #f8fafc;
-  color: #94a3b8;
-  border-color: #e2e8f0;
-  box-shadow: none;
+.progress-strip::-webkit-scrollbar {
+  display: none;
 }
 
-nav.screen button {
-  min-height: 44px;
-  border-color: transparent;
-  background: transparent;
-  color: #475569;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: none;
+.progress-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.95rem;
+  background: rgba(17, 38, 63, 0.05);
+  color: var(--c-text-muted);
 }
 
-nav.screen button:hover {
-  background: rgba(255, 255, 255, 0.88);
-  border-color: #e2e8f0;
-  color: #0f172a;
+.progress-pill span {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: rgba(17, 38, 63, 0.09);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
-nav.screen button[aria-current="page"],
-nav.screen button.is-active {
-  background: #0f172a;
-  border-color: #0f172a;
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+.progress-pill.is-done {
+  background: rgba(29, 106, 82, 0.1);
+  color: var(--c-green);
+}
+
+.progress-pill.is-done span {
+  background: rgba(29, 106, 82, 0.16);
+}
+
+.shell-status {
+  display: grid;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.shell-status p {
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: var(--c-red-soft);
+  color: var(--c-red);
+  border: 1px solid rgba(164, 58, 45, 0.12);
+  font-size: 0.9rem;
+}
+
+.module-intro {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.module-intro p {
+  color: var(--c-text-muted);
+}
+
+.hero-card,
+.feature-card,
+.helper-card,
+.summary-card,
+.status-card,
+.weather-card,
+.recommendation-card,
+.decision-primary-stay,
+.narrative-card,
+.map-card,
+.selected-stay-card,
+.execution-card,
+.plan-card,
+.strategy-card,
+.comparison-table-card,
+.signals-card,
+.route-snapshot,
+.route-snapshot__grid,
+.comparison-grid,
+.stay-selector-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.hero-card,
+.summary-card,
+.status-card,
+.weather-card,
+.recommendation-card,
+.decision-primary-stay,
+.narrative-card,
+.map-card,
+.selected-stay-card,
+.execution-card,
+.plan-card,
+.strategy-card,
+.comparison-table-card,
+.signals-card,
+.route-snapshot {
+  padding: 1.05rem 1.1rem;
+  border-radius: 1.3rem;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-card {
+  padding: 1.4rem;
+  background: linear-gradient(180deg, rgba(17, 38, 63, 0.04), rgba(201, 132, 40, 0.08));
+}
+
+.hero-card__actions,
+.module-actions,
+.action-link-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.home-grid,
+.arrival-helper-grid,
+.route-snapshot__grid,
+.comparison-grid,
+.stay-facts-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.home-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.feature-card,
+.helper-card,
+.mini-zone-card,
+.compare-card {
+  padding: 1rem;
+  border-radius: 1.15rem;
+  border: 1px solid var(--c-border);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.helper-card p:last-child,
+.feature-card p:last-child,
+.summary-card ul,
+.weather-card__note,
+.field-help,
+.compare-card p,
+.compare-card li,
+.detail-bullets li,
+.secondary-note p,
+.strategy-card p,
+.strategy-card li,
+.narrative-card p,
+.route-snapshot p,
+.route-snapshot li,
+.signals-card li {
+  color: var(--c-text-muted);
 }
 
 .arrival-options {
   display: grid;
-  gap: 12px;
-  margin-top: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
 .arrival-options button {
-  position: relative;
-  text-align: left;
-  justify-content: flex-start;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: #ffffff;
-  border-color: #dbe2ea;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-}
-
-.arrival-options button:hover {
-  border-color: #c8d1dc;
-  background: #fcfdff;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
-
-.arrival-options button[aria-pressed="true"],
-.arrival-options button.is-active {
-  border-color: #0f172a;
-  background: #0f172a;
-  color: #ffffff;
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
+  padding: 1rem 0.85rem;
+  background: rgba(17, 38, 63, 0.04);
+  color: var(--c-text);
+  font-weight: 700;
 }
 
 .arrival-details {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
+  padding: 1rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--c-border);
+  background: rgba(255, 255, 255, 0.68);
 }
 
-.arrival-details > p:first-child {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.arrival-details p + p {
-  margin-top: 6px;
-}
-
-.arrival-form {
+.arrival-form-grid {
   display: grid;
-  gap: 10px;
-  margin-top: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem;
 }
 
-.arrival-form label {
-  color: var(--text);
-  font-size: 0.94rem;
-  font-weight: 600;
-}
-
-.arrival-form input,
-.arrival-form select {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid #d7dee7;
-  border-radius: 14px;
-  background: #ffffff;
-  color: var(--text);
-<<<<<<< HEAD
-  padding: 12px 14px;
-  font: inherit;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  appearance: none;
-}
-
-.arrival-form input[type="time"] {
-  letter-spacing: 0.02em;
-  font-weight: 600;
-}
-
-.arrival-validation {
-  margin-top: 14px;
-  padding: 12px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  background: #f8fafc;
-}
-
-.arrival-validation p {
-  color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.arrival-actions {
-  margin-top: 16px;
-}
-
-.arrival-actions button {
-  min-height: 50px;
-  background: #0f172a;
-  border-color: #0f172a;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
-}
-
-.arrival-actions button:hover:not(:disabled) {
-  background: #111c30;
-  border-color: #111c30;
-=======
-  padding: 10px 12px;
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.radar-summary,
-.radar-operational,
-.radar-signals,
-.decision-context,
-.decision-base,
-.decision-comparison,
-.decision-recommendation {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-<<<<<<< HEAD
-  border-radius: 16px;
-  background: #f9fafb;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-=======
-<<<<<<< HEAD
-  border-radius: 18px;
-  background: #f9fafb;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
-=======
-  border-radius: 16px;
-  background: #f9fafb;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.radar-summary p + p,
-.radar-operational p + p,
-.radar-signals p + p,
-.decision-context p + p,
-.decision-base p + p,
-.decision-comparison p + p,
-.decision-recommendation p + p {
-  margin-top: 8px;
-}
-
-.radar-summary strong,
-.radar-operational strong,
-.radar-signals strong,
-.decision-context strong,
-.decision-base strong,
-.decision-comparison strong,
-.decision-recommendation strong {
-  color: var(--text);
-}
-
-.radar-summary ul,
-.radar-signals ul,
-.decision-context ul {
-  margin: 12px 0 0;
-  padding-left: 18px;
-}
-
-.radar-summary li,
-.radar-signals li,
-.decision-context li {
-  color: var(--text);
-<<<<<<< HEAD
-  line-height: 1.45;
-=======
-<<<<<<< HEAD
-  line-height: 1.48;
-=======
-  line-height: 1.45;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.radar-summary li + li,
-.radar-signals li + li,
-.decision-context li + li {
-  margin-top: 8px;
-}
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-.radar-operational,
-.radar-signals,
-.decision-base,
-.decision-comparison {
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-.radar-operational {
-  background: #ffffff;
-}
-
-.radar-signals {
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  background: #ffffff;
-}
-
-.radar-actions,
-.decision-actions {
-  margin-top: 16px;
-}
-
-.radar-actions button,
-.decision-actions button {
-  min-height: 48px;
-<<<<<<< HEAD
-  font-weight: 600;
-=======
-<<<<<<< HEAD
-  font-weight: 700;
-=======
-  font-weight: 600;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.decision-options {
+.field {
   display: grid;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 0.45rem;
 }
 
-.decision-option {
-  padding: 14px;
-  border: 1px solid #dfe5ec;
-<<<<<<< HEAD
-  border-radius: 14px;
-  background: #ffffff;
-=======
-<<<<<<< HEAD
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-=======
-  border-radius: 14px;
-  background: #ffffff;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+.field--full {
+  grid-column: 1 / -1;
 }
 
-.decision-option p + p {
-  margin-top: 8px;
-}
-
-.decision-option--alto {
-  border-color: #cfd8e3;
-  background: #f8fafc;
-}
-
-.decision-option--medio {
-  border-color: #dde3ea;
-  background: #fbfcfd;
-}
-
-.decision-recommendation--taxi,
-.action-recommendation--taxi,
-.action-activated-plan--taxi {
-  border-color: #d6dbe3;
-  background: #f8fafc;
-}
-
-.decision-recommendation--bus,
-.action-recommendation--bus,
-.action-activated-plan--bus {
-  border-color: #dde3ea;
-  background: #fbfcfd;
-}
-
-.action-reading,
-.action-recommendation,
-.action-next-steps,
-.action-primary-cta,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-.action-activated-plan,
-.action-lodging-preview,
-.pro-lodging-unlocked {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
-}
-
-.action-reading {
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-.action-activated-plan {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #f9fafb;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.action-reading p + p,
-.action-recommendation p + p,
-.action-next-steps p + p,
-.action-primary-cta p + p,
-<<<<<<< HEAD
-.action-activated-plan p + p {
-=======
-<<<<<<< HEAD
-.action-activated-plan p + p,
-.action-lodging-preview p + p,
-.pro-lodging-unlocked p + p {
-=======
-.action-activated-plan p + p {
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  margin-top: 8px;
-}
-
-.action-reading strong,
-.action-recommendation strong,
-.action-next-steps strong,
-.action-primary-cta strong,
-<<<<<<< HEAD
-.action-activated-plan strong {
-=======
-<<<<<<< HEAD
-.action-activated-plan strong,
-.action-lodging-preview strong,
-.pro-lodging-unlocked strong {
-=======
-.action-activated-plan strong {
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  color: var(--text);
-}
-
-.action-next-steps ul,
-<<<<<<< HEAD
-.action-activated-plan ul {
-=======
-<<<<<<< HEAD
-.action-activated-plan ul,
-.action-lodging-preview ul {
-=======
-.action-activated-plan ul {
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  margin: 12px 0 0;
-  padding-left: 18px;
-}
-
-.action-next-steps li,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-.action-activated-plan li,
-.action-lodging-preview li {
-  color: var(--text);
-  line-height: 1.48;
-}
-
-.action-next-steps li + li,
-.action-activated-plan li + li,
-.action-lodging-preview li + li {
-  margin-top: 8px;
-}
-
-.action-recommendation {
-  border-width: 1px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-}
-
-.action-recommendation + .action-next-steps {
-  border-color: #d7dee7;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-.action-activated-plan li {
-  color: var(--text);
-  line-height: 1.45;
-}
-
-.action-next-steps li + li,
-.action-activated-plan li + li {
-  margin-top: 8px;
-}
-
-.action-recommendation + .action-next-steps {
-  border-color: #cfd8e3;
-  background: #ffffff;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.action-recommendation + .action-next-steps strong {
-  color: #0f172a;
-}
-
-.action-recommendation + .action-next-steps ul {
-  margin-top: 10px;
-}
-
-.action-recommendation + .action-next-steps li {
-  line-height: 1.5;
-}
-
-.action-recommendation + .action-next-steps p:last-child {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #e7ebf0;
-}
-
-.action-primary-cta {
-<<<<<<< HEAD
-  background: #ffffff;
-=======
-<<<<<<< HEAD
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-=======
-  background: #ffffff;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.action-primary-cta button {
-  margin-top: 12px;
-<<<<<<< HEAD
-  min-height: 48px;
-  font-weight: 600;
-=======
-<<<<<<< HEAD
-  min-height: 50px;
+.field > span {
+  font-size: 0.88rem;
   font-weight: 700;
-  background: #0f172a;
-  border-color: #0f172a;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+  color: var(--c-text);
 }
 
-.action-primary-cta button:hover:not(:disabled) {
-  background: #111c30;
-  border-color: #111c30;
-=======
-  min-height: 48px;
-  font-weight: 600;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.action-primary-cta p:last-child,
-.action-activated-plan p:last-child,
-.action-next-steps p:last-child,
-.action-reading p:last-child,
-<<<<<<< HEAD
-.action-recommendation p:last-child {
-=======
-<<<<<<< HEAD
-.action-recommendation p:last-child,
-.action-lodging-preview p:last-child,
-.pro-lodging-unlocked p:last-child {
-=======
-.action-recommendation p:last-child {
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  margin-bottom: 0;
-}
-
-.action-recommendation--taxi,
-.action-activated-plan--taxi {
-  border-color: #d6dbe3;
-<<<<<<< HEAD
-  background: #f8fafc;
-=======
-<<<<<<< HEAD
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-=======
-  background: #f8fafc;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.action-recommendation--bus,
-.action-activated-plan--bus {
-  border-color: #dde3ea;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  background: linear-gradient(180deg, #fbfcfd 0%, #ffffff 100%);
-}
-
-.action-lodging-preview,
-.pro-lodging-unlocked {
-  overflow: hidden;
-}
-
-.action-lodging-preview {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-}
-
-.action-lodging-preview-map {
-  position: relative;
-  margin-top: 14px;
-}
-
-.action-lodging-preview-map-stage {
-  position: relative;
-  min-height: 260px;
-  border: 1px solid #d8e1ea;
-  border-radius: 22px;
-  overflow: hidden;
-  background: #dfe7ee;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 12px 32px rgba(15, 23, 42, 0.08);
-}
-
-.action-lodging-preview-map-kicker {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 6;
-}
-
-.action-lodging-preview-map-kicker span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
-}
-
-.action-lodging-leaflet-map,
-.action-lodging-static-map-image {
+.field input,
+.field select,
+.flight-lookup-row input {
+  min-height: 3rem;
   width: 100%;
-  height: 260px;
-  background: #dfe7ee;
+  padding: 0.86rem 0.95rem;
+  border: 1px solid rgba(17, 38, 63, 0.1);
+  border-radius: 0.95rem;
+  background: #fff;
+  color: var(--c-text);
+  outline: none;
 }
 
-.action-lodging-static-map-image,
-.pro-lodging-static-map-image {
-  display: block;
-  object-fit: cover;
+.field input:focus,
+.field select:focus,
+.flight-lookup-row input:focus {
+  border-color: rgba(17, 38, 63, 0.35);
+  box-shadow: 0 0 0 4px rgba(17, 38, 63, 0.08);
 }
 
-.action-lodging-leaflet-map .leaflet-tile {
-  filter: saturate(0.94) contrast(1.02);
+.flight-lookup-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem;
 }
 
-.action-lodging-preview-map-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 26%),
-    linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 34%);
-}
-
-.action-lodging-preview-map-lock {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 34px;
-  z-index: 5;
-  padding: 12px 13px;
-  border: 1px solid rgba(223, 229, 236, 0.92);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-}
-
-.action-lodging-preview-map-lock p + p {
-  margin-top: 4px;
-}
-
-.action-lodging-preview-map-attribution,
-.pro-lodging-unlocked-attribution {
-  position: absolute;
-  right: 12px;
-  bottom: 10px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #475569;
-  font-size: 0.68rem;
+.flight-lookup-row button,
+.button,
+.module-actions button,
+.arrival-actions button,
+#action-primary-cta-btn,
+#decision-continue-btn,
+#install-btn {
+  min-height: 3rem;
+  padding: 0.85rem 1.1rem;
+  background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-navy-2) 100%);
+  color: #fff;
   font-weight: 700;
-  letter-spacing: 0.01em;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 26px rgba(17, 38, 63, 0.18);
 }
 
-.action-lodging-marker-pill {
-  background: transparent;
-  border: none;
+.button--ghost,
+#share-btn {
+  background: rgba(17, 38, 63, 0.05);
+  color: var(--c-text);
+  box-shadow: none;
 }
 
-.action-lodging-marker-pill span {
+.link-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 58px;
-  min-height: 26px;
-  padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.92);
+  min-height: 2.8rem;
+  padding: 0.78rem 1rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #0f172a;
-  font-size: 0.76rem;
-  font-weight: 800;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+  border: 1px solid var(--c-border-strong);
+  background: rgba(17, 38, 63, 0.04);
+  color: var(--c-text);
+  font-weight: 700;
+  text-align: center;
 }
 
-.action-lodging-marker-pill--primary span {
-  background: #0f172a;
-  color: #ffffff;
+.link-chip--primary {
+  background: var(--c-navy);
+  color: #fff;
 }
 
-.pro-lodging-unlocked-map {
-  position: relative;
-  min-height: 210px;
-  margin-top: 14px;
-  border: 1px solid #dfe5ec;
-  border-radius: 18px;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.12)),
-    radial-gradient(circle at 20% 20%, rgba(203, 213, 225, 0.4), transparent 26%),
-    radial-gradient(circle at 80% 30%, rgba(226, 232, 240, 0.55), transparent 22%),
-    linear-gradient(135deg, #eef4f8 0%, #f8fafc 48%, #e9f1f7 100%);
+.flight-lookup-status,
+.arrival-validation,
+.secondary-note {
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(17, 38, 63, 0.08);
 }
 
-.pro-lodging-unlocked-map--real {
-  background: #dfe7ee;
+.arrival-validation.is-valid,
+.secondary-note.is-positive,
+.status-card--low,
+.plan-card--active {
+  background: var(--c-green-soft);
+  border-color: rgba(29, 106, 82, 0.16);
 }
 
-.pro-lodging-static-map-image {
-  width: 100%;
-  min-height: 210px;
-  height: 100%;
+.arrival-validation.is-pending,
+.status-card--warning,
+.secondary-note.is-warning {
+  background: rgba(201, 132, 40, 0.12);
+  border-color: rgba(201, 132, 40, 0.2);
 }
 
-.pro-lodging-unlocked-map::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-  background-size: 42px 42px;
-  opacity: 0.45;
-  pointer-events: none;
+.flight-lookup-status--error,
+.status-card--high {
+  background: var(--c-red-soft);
+  border-color: rgba(164, 58, 45, 0.18);
 }
 
-.pro-lodging-unlocked-map::after {
-  content: "";
-  position: absolute;
-  inset: 16px 22% 22px 14px;
-  border-radius: 999px 60% 55% 999px;
-  background: linear-gradient(180deg, rgba(214, 234, 248, 0.72), rgba(191, 219, 254, 0.3));
-  filter: blur(0.3px);
-  opacity: 0.6;
-  pointer-events: none;
+.flight-lookup-status--loading,
+.status-card--loading,
+.status-card--medium {
+  background: var(--c-blue-soft);
+  border-color: rgba(49, 83, 126, 0.18);
 }
 
-.pro-lodging-unlocked-map--real::before,
-.pro-lodging-unlocked-map--real::after {
-  display: none;
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  background: #fbfcfd;
+.weather-card--storm {
+  background: linear-gradient(180deg, rgba(164, 58, 45, 0.08), rgba(255,255,255,0.96));
 }
 
-@media (min-width: 768px) {
-  .action-reading,
-  .action-recommendation,
-  .action-next-steps,
-  .action-primary-cta,
-  .action-activated-plan {
-    padding: 18px;
-  }
-}
-.action-lodging-preview,
-.pro-lodging-unlocked {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+.weather-card--rain {
+  background: linear-gradient(180deg, rgba(49, 83, 126, 0.08), rgba(255,255,255,0.96));
 }
 
-.action-lodging-preview p + p,
-.pro-lodging-unlocked p + p {
-  margin-top: 8px;
+.weather-card--clear,
+.weather-card--cloudy,
+.weather-card--neutral {
+  background: linear-gradient(180deg, rgba(29, 106, 82, 0.05), rgba(255,255,255,0.96));
 }
 
-.action-lodging-preview strong,
-.pro-lodging-unlocked strong {
-  color: var(--text);
+.weather-grid,
+.stay-facts-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.action-lodging-preview-map,
-.pro-lodging-unlocked-map {
-  position: relative;
-  min-height: 180px;
-  margin-top: 12px;
-  border: 1px solid #dfe5ec;
-  border-radius: 16px;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.92)),
-    repeating-linear-gradient(
-      0deg,
-      #eef2f6 0,
-      #eef2f6 22px,
-      #f8fafc 22px,
-      #f8fafc 44px
-    );
+.weather-grid div,
+.stay-facts-grid div {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  background: rgba(17, 38, 63, 0.04);
 }
 
-.action-lodging-preview-pin {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  border: 2px solid #ffffff;
-  background: #0f172a;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+.weather-grid span,
+.stay-facts-grid strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-text);
 }
 
-.action-lodging-preview-pin--primary {
-  top: 34px;
-  left: 28%;
+.weather-grid small,
+.stay-facts-grid span {
+  color: var(--c-text-muted);
 }
 
-.action-lodging-preview-pin--secondary {
-  top: 74px;
-  right: 22%;
-  background: #475569;
+.recommendation-card--taxi,
+.execution-card--taxi {
+  background: linear-gradient(180deg, rgba(189, 93, 43, 0.08), rgba(255,255,255,0.96));
 }
 
-.action-lodging-preview-pin--bottom {
-  top: auto;
-  bottom: 44px;
-  left: 44%;
+.recommendation-card--bus,
+.execution-card--bus {
+  background: linear-gradient(180deg, rgba(29, 106, 82, 0.08), rgba(255,255,255,0.96));
 }
 
-.action-lodging-preview-overlay {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  padding: 12px;
-  border: 1px solid rgba(223, 229, 236, 0.9);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(4px);
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.action-lodging-preview-card,
-.action-lodging-preview-lock,
-.pro-lodging-unlocked-card,
-.pro-lodging-unlocked-note {
-  margin-top: 12px;
-  padding: 14px;
-  border: 1px solid #e2e8f0;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  border-radius: 15px;
-  background: #f8fafc;
-}
-
-.action-lodging-preview-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-}
-
-.action-lodging-preview-lock {
-  background: linear-gradient(180deg, #f8fafc 0%, #e9eff5 100%);
-}
-
-.action-lodging-preview-card ul {
-  margin: 10px 0 0;
-  padding-left: 18px;
-}
-
-.action-lodging-preview-card li + li {
-  margin-top: 8px;
-}
-
-.action-lodging-preview-card span {
-  color: var(--muted);
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  border-radius: 14px;
-  background: #f8fafc;
-}
-
-.action-lodging-preview-lock {
-  background: #f1f5f9;
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-}
-
-.pro-lodging-unlocked-badge {
-  position: absolute;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  z-index: 3;
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  top: 12px;
-  left: 12px;
+.score-badge {
   display: inline-flex;
   align-items: center;
-<<<<<<< HEAD
-  min-height: 32px;
-=======
-<<<<<<< HEAD
-  min-height: 34px;
-=======
-  min-height: 32px;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  padding: 6px 10px;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.92);
-  color: #ffffff;
+  background: rgba(17, 38, 63, 0.08);
+  color: var(--c-navy);
   font-size: 0.82rem;
-<<<<<<< HEAD
-  font-weight: 600;
-=======
-<<<<<<< HEAD
   font-weight: 700;
-  letter-spacing: 0.01em;
-=======
-  font-weight: 600;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+  text-transform: capitalize;
 }
 
-.pro-lodging-unlocked-grid {
-  position: absolute;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  z-index: 3;
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
+.compare-card.is-winner {
+  border-color: rgba(17, 38, 63, 0.22);
+  box-shadow: 0 12px 22px rgba(17, 38, 63, 0.08);
+}
+
+.compare-card__title,
+.mini-zone-card__title {
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.compare-card ul,
+.detail-bullets,
+.summary-card ul,
+.signals-card ul {
   display: grid;
-  gap: 10px;
+  gap: 0.45rem;
 }
 
-.pro-lodging-unlocked-spot {
-  padding: 12px;
-  border: 1px solid rgba(223, 229, 236, 0.9);
-<<<<<<< HEAD
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(4px);
-=======
-<<<<<<< HEAD
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-=======
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(4px);
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+.detail-bullets li,
+.summary-card li,
+.signals-card li,
+.compare-card li {
+  position: relative;
+  padding-left: 1rem;
 }
 
-.pro-lodging-unlocked-spot--primary {
-  border-color: #cbd5e1;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  background: rgba(248, 250, 252, 0.97);
+.detail-bullets li::before,
+.summary-card li::before,
+.signals-card li::before,
+.compare-card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: var(--c-terra);
 }
 
-@media (min-width: 768px) {
-  nav.screen {
+.map-card {
+  gap: var(--space-sm);
+}
+
+.map-canvas {
+  width: 100%;
+  min-height: 20rem;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+}
+
+.map-canvas--large {
+  min-height: 22rem;
+}
+
+.map-marker {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--c-terra);
+  border: 3px solid rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 4px rgba(189, 93, 43, 0.22);
+}
+
+.map-marker--primary {
+  background: var(--c-navy);
+  box-shadow: 0 0 0 4px rgba(17, 38, 63, 0.18);
+}
+
+.map-marker.is-active {
+  transform: scale(1.12);
+}
+
+.stay-selector-grid,
+.comparison-grid,
+.route-snapshot__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stay-option,
+.pro-compare-row {
+  display: grid;
+  align-items: start;
+  justify-items: start;
+  gap: 0.15rem;
+  padding: 0.95rem 1rem;
+  background: rgba(17, 38, 63, 0.04);
+  color: var(--c-text);
+  text-align: left;
+}
+
+.stay-option strong,
+.pro-zone strong,
+.pro-metrics strong {
+  font-size: 0.96rem;
+}
+
+.stay-option span,
+.stay-option small,
+.pro-zone small,
+.pro-metrics small {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.pro-compare-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.pro-compare-row {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.pro-rank {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(17, 38, 63, 0.08);
+  font-weight: 700;
+}
+
+.secondary-note,
+.field-help {
+  font-size: 0.88rem;
+}
+
+.module-actions--secondary {
+  padding-top: 0;
+}
+
+.leaflet-control-attribution {
+  font-size: 0.7rem !important;
+}
+
+@media (max-width: 720px) {
+  .app-nav__routes {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .arrival-options {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .home-grid,
+  .stay-selector-grid,
+  .comparison-grid,
+  .route-snapshot__grid,
+  .weather-grid,
+  .stay-facts-grid,
+  .arrival-form-grid {
+    grid-template-columns: 1fr;
   }
 
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  background: rgba(248, 250, 252, 0.96);
-}
-
-@media (min-width: 768px) {
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-  .action-reading,
-  .action-recommendation,
-  .action-next-steps,
-  .action-primary-cta,
-  .action-activated-plan,
-  .action-lodging-preview,
-  .pro-lodging-unlocked {
-    padding: 18px;
-  }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-  .action-lodging-leaflet-map,
-  .action-lodging-static-map-image {
-    height: 300px;
+  .flight-lookup-row {
+    grid-template-columns: 1fr;
   }
 
-  .pro-lodging-static-map-image {
-    min-height: 300px;
-  }
-
-  .action-lodging-preview-map-stage,
-  .pro-lodging-unlocked-map {
-    min-height: 300px;
+  .section-heading {
+    flex-direction: column;
   }
 }
-  .action-lodging-leaflet-map {
-    height: 300px;
+
+@media (hover: hover) and (pointer: fine) {
+  .app-nav button:hover,
+  .lang-btn:hover,
+  .arrival-options button:hover,
+  .progress-pill:hover,
+  .button:hover,
+  .link-chip:hover,
+  .stay-option:hover,
+  .pro-compare-row:hover {
+    transform: translateY(-1px);
   }
+}
 
-  .action-lodging-preview-map-stage,
-  .pro-lodging-unlocked-map {
-    min-height: 300px;
-=======
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 
-  .action-lodging-preview-map,
-  .pro-lodging-unlocked-map {
-    min-height: 210px;
-<<<<<<< HEAD
-=======
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+.pro-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.pro-plan-card {
+  display: grid;
+  gap: var(--space-md);
+  padding: 1.05rem 1.1rem;
+  border-radius: 1.3rem;
+  border: 1px solid var(--c-border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(17, 38, 63, 0.03));
+  box-shadow: var(--shadow-sm);
+}
+
+.pro-plan-card.is-active {
+  border-color: rgba(17, 38, 63, 0.22);
+  box-shadow: 0 12px 22px rgba(17, 38, 63, 0.08);
+}
+
+.pro-plan-card .action-link-grid {
+  align-items: stretch;
+}
+
+.pro-plan-apply {
+  width: 100%;
+  justify-content: center;
+}
+
+.strategy-card--fallback {
+  background: linear-gradient(180deg, rgba(201, 132, 40, 0.08), rgba(255,255,255,0.96));
+}
+
+@media (max-width: 960px) {
+  .pro-plan-grid {
+    grid-template-columns: 1fr;
   }
 }

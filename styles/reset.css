@@ -27,20 +27,16 @@ ol {
   list-style: none;
 }
 
-body {
-  min-height: 100vh;
-  text-rendering: optimizeLegibility;
-}
-
 img,
-picture {
-  max-width: 100%;
+picture,
+svg {
   display: block;
+  max-width: 100%;
 }
 
-button,
 input,
 select,
-textarea {
+textarea,
+button {
   font: inherit;
 }
