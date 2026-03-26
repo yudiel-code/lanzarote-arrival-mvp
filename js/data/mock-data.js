@@ -3,220 +3,144 @@ export const mockData = {
   transport: [],
   lodging: [
     {
-      id: "arrecife-compact-base",
-      label: "Arrecife",
-      zone: "arrecife",
-<<<<<<< HEAD
-      type: "hotel urbano / apartamento",
-      baseNightEur: 78,
-=======
-<<<<<<< HEAD
-      zoneLabel: "Arrecife",
-      type: "hotel urbano / apartamento",
+      id: 'arrecife-compact-base',
+      label: 'Arrecife',
+      zone: 'arrecife',
+      zoneLabel: 'Arrecife',
+      type: 'hotel urbano / apartamento',
       baseNightEur: 78,
       coordinates: { lat: 28.963, lng: -13.547 },
       mapPosition: { x: 32, y: 38 },
-=======
-      type: "hotel urbano / apartamento",
-      baseNightEur: 78,
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-      idealFor: ["crucero", "manual"],
-      goodForLoads: ["low", "medium"],
-      transportFit: ["taxi", "bus"],
-      proximity: ["puerto", "arrecife", "centro"],
+      idealFor: ['crucero', 'manual'],
+      goodForLoads: ['low', 'medium'],
+      transportFit: ['taxi', 'bus'],
+      proximity: ['puerto', 'arrecife', 'centro'],
       lateArrivalFriendly: true,
       groupFriendly: false,
       shortStayFriendly: true,
-      caution: "Encaja mejor para base práctica que para estancia de playa.",
+      caution: 'Encaja mejor como base práctica que como estancia de playa pura.',
       strengths: [
-        "Reduce desplazamientos cuando llegas por puerto o zona centro.",
-        "Buena base para una primera noche simple y operativa."
-<<<<<<< HEAD
-      ]
-=======
-<<<<<<< HEAD
+        'Reduce desplazamientos cuando llegas por puerto o centro.',
+        'Buena primera noche si quieres resolver rápido y recolocarte después.'
       ],
-      publicNote: "Base urbana rápida si tu prioridad es resolver la entrada sin desviarte demasiado.",
-      areaHint: "centro / puerto"
-=======
-      ]
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+      publicNote: 'Base urbana rápida si tu prioridad es entrar, cenar y dormir sin rodeos.',
+      areaHint: 'centro / puerto',
+      areaSummary: 'Muy útil cuando la prioridad no es la postal sino entrar bien en la isla y mantener todo a mano.',
+      bestFor: ['primera noche', 'crucero', 'llegada práctica'],
+      vibe: 'urbano y funcional',
+      searchTerm: 'Arrecife Lanzarote hotel apartment'
     },
     {
-      id: "playa-honda-practical-stay",
-      label: "Playa Honda",
-      zone: "playa-honda",
-<<<<<<< HEAD
-      type: "apartamento práctico",
-      baseNightEur: 84,
-=======
-<<<<<<< HEAD
-      zoneLabel: "Playa Honda",
-      type: "apartamento práctico",
+      id: 'playa-honda-practical-stay',
+      label: 'Playa Honda',
+      zone: 'playa-honda',
+      zoneLabel: 'Playa Honda',
+      type: 'apartamento práctico',
       baseNightEur: 84,
       coordinates: { lat: 28.956, lng: -13.559 },
       mapPosition: { x: 39, y: 34 },
-=======
-      type: "apartamento práctico",
-      baseNightEur: 84,
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-      idealFor: ["vuelo", "manual"],
-      goodForLoads: ["low", "medium"],
-      transportFit: ["taxi", "bus"],
-      proximity: ["aeropuerto", "playa-honda"],
+      idealFor: ['vuelo', 'manual'],
+      goodForLoads: ['low', 'medium'],
+      transportFit: ['taxi', 'bus'],
+      proximity: ['aeropuerto', 'playa-honda'],
       lateArrivalFriendly: true,
       groupFriendly: false,
       shortStayFriendly: true,
-      caution: "No es la zona con más ambiente si buscas ocio al salir.",
+      caution: 'No es la zona con más ambiente si buscas ocio al salir.',
       strengths: [
-        "Muy práctica para entrar y dormir sin meter desvíos largos.",
-        "Suele encajar bien en llegadas cortas o tardías."
-<<<<<<< HEAD
-      ]
-=======
-<<<<<<< HEAD
+        'Muy práctica para aterrizar y dormir sin meter desvíos largos.',
+        'Suele funcionar bien para una noche de aterrizaje o estancias cortas.'
       ],
-      publicNote: "Muy lógica cuando aterrizas y solo quieres entrar, dormir y recolocarte al día siguiente.",
-      areaHint: "aeropuerto / costa cercana"
-=======
-      ]
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+      publicNote: 'Muy lógica cuando aterrizas y solo quieres entrar bien hoy y decidir mejor mañana.',
+      areaHint: 'aeropuerto / costa cercana',
+      areaSummary: 'Una de las zonas más limpias para bajar fricción después de aterrizar, sobre todo si no quieres un sur más largo.',
+      bestFor: ['vuelo tardío', 'entrada rápida', 'pareja o solo'],
+      vibe: 'práctico y calmado',
+      searchTerm: 'Playa Honda Lanzarote apartment'
     },
     {
-      id: "puerto-del-carmen-balanced-base",
-      label: "Puerto del Carmen",
-      zone: "puerto-del-carmen",
-<<<<<<< HEAD
-      type: "hotel / apartamento turístico",
-      baseNightEur: 96,
-=======
-<<<<<<< HEAD
-      zoneLabel: "Puerto del Carmen",
-      type: "hotel / apartamento turístico",
+      id: 'puerto-del-carmen-balanced-base',
+      label: 'Puerto del Carmen',
+      zone: 'puerto-del-carmen',
+      zoneLabel: 'Puerto del Carmen',
+      type: 'hotel / apartamento turístico',
       baseNightEur: 96,
       coordinates: { lat: 28.923, lng: -13.653 },
       mapPosition: { x: 24, y: 58 },
-=======
-      type: "hotel / apartamento turístico",
-      baseNightEur: 96,
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-      idealFor: ["vuelo", "manual"],
-      goodForLoads: ["low", "medium", "high"],
-      transportFit: ["taxi", "bus"],
-      proximity: ["aeropuerto", "puerto-del-carmen", "sur"],
+      idealFor: ['vuelo', 'manual'],
+      goodForLoads: ['low', 'medium', 'high'],
+      transportFit: ['taxi', 'bus'],
+      proximity: ['aeropuerto', 'puerto-del-carmen', 'sur'],
       lateArrivalFriendly: true,
       groupFriendly: true,
       shortStayFriendly: true,
-      caution: "Puede tener más movimiento y precio que una base puramente funcional.",
+      caution: 'Puede salir algo más caro o más movido que una base puramente funcional.',
       strengths: [
-        "Equilibra llegada fácil, servicios y sensación de vacaciones.",
-        "Encaja bien cuando no quieres pensar demasiado al aterrizar."
-<<<<<<< HEAD
-      ]
-=======
-<<<<<<< HEAD
+        'Equilibra llegada fácil, servicios y sensación de vacaciones.',
+        'Encaja muy bien cuando no quieres sobrepensar la primera base.'
       ],
-      publicNote: "Punto bastante equilibrado entre facilidad de llegada y sensación de estancia más completa.",
-      areaHint: "sur próximo / zona turística"
-=======
-      ]
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+      publicNote: 'El punto más equilibrado cuando quieres llegar bien sin caer en una zona demasiado seca o demasiado lejos.',
+      areaHint: 'sur próximo / zona turística',
+      areaSummary: 'Es la base más redonda cuando quieres mezcla de facilidad, paseo, servicios y salida rápida desde el aeropuerto.',
+      bestFor: ['primera base', 'grupo', 'sin coche'],
+      vibe: 'turístico y fácil',
+      searchTerm: 'Puerto del Carmen Lanzarote hotel'
     },
     {
-      id: "costa-teguise-relaxed-family",
-      label: "Costa Teguise",
-      zone: "costa-teguise",
-<<<<<<< HEAD
-      type: "resort / apartamento",
-      baseNightEur: 104,
-=======
-<<<<<<< HEAD
-      zoneLabel: "Costa Teguise",
-      type: "resort / apartamento",
+      id: 'costa-teguise-relaxed-family',
+      label: 'Costa Teguise',
+      zone: 'costa-teguise',
+      zoneLabel: 'Costa Teguise',
+      type: 'resort / apartamento',
       baseNightEur: 104,
       coordinates: { lat: 28.998, lng: -13.492 },
       mapPosition: { x: 55, y: 25 },
-=======
-      type: "resort / apartamento",
-      baseNightEur: 104,
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-      idealFor: ["vuelo", "crucero", "manual"],
-      goodForLoads: ["medium", "high"],
-      transportFit: ["taxi", "bus"],
-      proximity: ["puerto", "costa-teguise", "norte", "arrecife"],
+      idealFor: ['vuelo', 'crucero', 'manual'],
+      goodForLoads: ['medium', 'high'],
+      transportFit: ['taxi', 'bus'],
+      proximity: ['puerto', 'costa-teguise', 'norte', 'arrecife'],
       lateArrivalFriendly: false,
       groupFriendly: true,
       shortStayFriendly: false,
-      caution: "Para una llegada muy tardía puede añadir algo más de desplazamiento.",
+      caution: 'Para una llegada muy tardía añade algo más de trayecto y menos inmediatez.',
       strengths: [
-        "Buena zona para grupos y estancias algo más cómodas.",
-        "Suele encajar cuando quieres base más limpia y menos apretada."
-<<<<<<< HEAD
-      ]
-=======
-<<<<<<< HEAD
+        'Buena zona para grupos, familia y estancias algo más cómodas.',
+        'Da sensación más limpia y de resort que una base urbana.'
       ],
-      publicNote: "Se vuelve más interesante cuando el grupo pesa más que la pura inmediatez.",
-      areaHint: "norte cercano / resort"
-=======
-      ]
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
+      publicNote: 'Más lógica cuando pesa la calidad de estancia y no solo la urgencia de entrada.',
+      areaHint: 'norte cercano / resort',
+      areaSummary: 'Sube de valor cuando tu grupo quiere más calma y una base más cómoda, aunque no sea la entrada más corta.',
+      bestFor: ['familia', 'grupo', 'estancia tranquila'],
+      vibe: 'relajado y resort',
+      searchTerm: 'Costa Teguise Lanzarote resort apartment'
     },
     {
-      id: "playa-blanca-south-stay",
-      label: "Playa Blanca",
-      zone: "playa-blanca",
-<<<<<<< HEAD
-      type: "resort / apartamento amplio",
-      baseNightEur: 118,
-=======
-<<<<<<< HEAD
-      zoneLabel: "Playa Blanca",
-      type: "resort / apartamento amplio",
+      id: 'playa-blanca-south-stay',
+      label: 'Playa Blanca',
+      zone: 'playa-blanca',
+      zoneLabel: 'Playa Blanca',
+      type: 'resort / apartamento amplio',
       baseNightEur: 118,
       coordinates: { lat: 28.862, lng: -13.829 },
       mapPosition: { x: 8, y: 83 },
-=======
-      type: "resort / apartamento amplio",
-      baseNightEur: 118,
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
-      idealFor: ["manual", "vuelo"],
-      goodForLoads: ["medium", "high"],
-      transportFit: ["taxi"],
-      proximity: ["sur", "playa-blanca"],
+      idealFor: ['manual', 'vuelo'],
+      goodForLoads: ['medium', 'high'],
+      transportFit: ['taxi'],
+      proximity: ['sur', 'playa-blanca'],
       lateArrivalFriendly: false,
       groupFriendly: true,
       shortStayFriendly: false,
-      caution: "No conviene tanto si buscas resolver la llegada con el menor recorrido posible.",
+      caution: 'No es buena jugada si lo único que quieres es resolver la llegada con el menor recorrido.',
       strengths: [
-        "Encaja mejor cuando ya sabes que tu base final debe estar en el sur.",
-        "Más lógica para grupos o estancia más reposada que para entrada rápida."
-<<<<<<< HEAD
-      ]
-    }
-  ]
-};
-=======
-<<<<<<< HEAD
+        'Encaja cuando ya sabes que tu base final debe estar en el sur.',
+        'Tiene más sentido para grupo o estancia estable que para primera entrada rápida.'
       ],
-      publicNote: "Tiene sentido cuando el destino sur ya está decidido, no tanto para improvisar al llegar.",
-      areaHint: "sur largo / estancia más asentada"
+      publicNote: 'Tiene lógica cuando el sur ya es la decisión y prefieres ejecutar una vez, no improvisar dos veces.',
+      areaHint: 'sur largo / estancia más asentada',
+      areaSummary: 'No es la opción corta, pero sí una base coherente si el viaje ya está claramente orientado al sur.',
+      bestFor: ['estancia larga', 'sur claro', 'grupo'],
+      vibe: 'sur reposado',
+      searchTerm: 'Playa Blanca Lanzarote resort'
     }
   ]
 };
-=======
-      ]
-    }
-  ]
-};
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
