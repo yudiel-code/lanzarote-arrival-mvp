@@ -1,1338 +1,408 @@
-import { appState } from "../state.js";
-<<<<<<< HEAD
-import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
+import { appState } from '../state.js';
+import { buildRecommendation } from '../services/decision-engine.js';
+import { buildLodgingActionSet, buildLodgingNarrative } from '../services/external-actions.js';
 
-function getPassengerLoad(value) {
-  if (value === "5+") return "high";
+let proMap = null;
 
-  const numericValue = Number(value || 0);
-
-  if (numericValue >= 5) return "high";
-  if (numericValue >= 3) return "medium";
-  if (numericValue >= 1) return "low";
-
-  return "unknown";
+function getRecommendation(preferredMode = null) {
+  if (!appState.operationalContext) return null;
+  return buildRecommendation(appState.operationalContext, appState.arrivalType, appState.arrivalData, preferredMode);
 }
 
-function parseHour(value) {
-  const match = String(value || "").match(/^(\d{1,2}):/);
-  if (!match) return null;
-
-  const hour = Number(match[1]);
-  return Number.isNaN(hour) ? null : hour;
+function getSelectedLodging(recommendation) {
+  const shortlist = recommendation?.shortlist || [];
+  if (!shortlist.length) return null;
+  return shortlist.find((item) => item.id === appState.selectedLodgingId) || shortlist[0];
 }
 
-function isLateArrival(hour) {
-  if (hour === null) return false;
-  return hour >= 21 || hour <= 6;
-}
-
-function formatAirport(value) {
-  if (value === "ace") return "Aeropuerto César Manrique";
-  return value || "-";
-}
-
-function formatCruisePort(value) {
-  if (value === "arrecife") return "Puerto de Arrecife";
-  if (value === "calero" || value === "puerto-calero") return "Puerto Calero";
-  return value || "-";
-}
-
-function formatManualArea(value) {
-  if (value === "arrecife") return "Arrecife";
-  if (value === "playa-honda") return "Playa Honda";
-  if (value === "puerto-del-carmen") return "Puerto del Carmen";
-  if (value === "costa-teguise") return "Costa Teguise";
-  if (value === "playa-blanca") return "Playa Blanca";
-  if (value === "otra") return "Otra zona";
-  return value || "-";
-}
-
-function getArrivalMeta() {
-  if (appState.arrivalType === "vuelo") {
-    return {
-      typeLabel: "Vuelo",
-      pointLabel: formatAirport(appState.arrivalData.flight.airport),
-      time: appState.arrivalData.flight.time || "-",
-      passengers: appState.arrivalData.flight.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.flight.passengers),
-      hour: parseHour(appState.arrivalData.flight.time),
-      extraLabel: null
-    };
-  }
-
-  if (appState.arrivalType === "crucero") {
-    const disembark = appState.arrivalData.cruise.disembarkContext;
-
-    return {
-      typeLabel: "Crucero",
-      pointLabel: formatCruisePort(appState.arrivalData.cruise.port),
-      time: appState.arrivalData.cruise.time || "-",
-      passengers: appState.arrivalData.cruise.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.cruise.passengers),
-      hour: parseHour(appState.arrivalData.cruise.time),
-      extraLabel:
-        disembark === "rapido"
-          ? "Desembarque rápido"
-          : disembark === "normal"
-            ? "Desembarque normal"
-            : disembark === "lento"
-              ? "Desembarque lento"
-              : "-"
-    };
-  }
-
-  if (appState.arrivalType === "manual") {
-    return {
-      typeLabel: "Manual",
-      pointLabel: appState.arrivalData.manual.location || "-",
-      time: appState.arrivalData.manual.time || "-",
-      passengers: appState.arrivalData.manual.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.manual.passengers),
-      hour: parseHour(appState.arrivalData.manual.time),
-      extraLabel: formatManualArea(appState.arrivalData.manual.area)
-    };
-  }
-
-  return null;
-}
-
-function getProReading(meta) {
-  if (!meta) {
-    return {
-      title: "Sin contexto suficiente",
-      detail: "Todavía no hay base útil para detectar oportunidades."
-    };
-  }
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return {
-      title: "Ventana sensible",
-      detail: "Aquí la ventaja no está en correr, sino en evitar fricción y dejar cerrado lo importante antes."
-    };
-  }
-
-  if (meta.load === "high") {
-    return {
-      title: "Ventana sensible",
-      detail: "Con grupo grande, la oportunidad real está en reducir improvisación y pasos innecesarios."
-    };
-  }
-
-  if (isLateArrival(meta.hour)) {
-    return {
-      title: "Ventana útil corta",
-      detail: "Llegada tardía: conviene asegurar primero lo cercano y lo resolutivo."
-    };
-  }
-
-  return {
-    title: "Ventana favorable",
-    detail: "Hay margen para decidir con algo más de cabeza y sacar ventaja del contexto."
-  };
-}
-
-function getOpportunitySignals(meta) {
-  const signals = [];
-
-  if (!meta) return signals;
-
-  if (appState.arrivalType === "vuelo") {
-    signals.push("Puedes orientar mejor la primera base según rapidez de salida desde aeropuerto.");
-  }
-
-  if (appState.arrivalType === "crucero") {
-    signals.push("La clave no es solo salir del puerto, sino evitar una base que añada desvíos inútiles.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    signals.push("Tu ventaja está en adaptar la decisión a la zona real en la que ya caíste.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    signals.push("Conviene priorizar alojamiento práctico antes que una zona bonita pero peor conectada.");
-  } else {
-    signals.push("Con esta hora, todavía puedes balancear practicidad y zona sin ir tan forzado.");
-  }
-
-  if (meta.load === "high") {
-    signals.push("Grupo grande: vale más una decisión simple y ejecutable que una opción teóricamente perfecta.");
-  } else if (meta.load === "medium") {
-    signals.push("Grupo medio: todavía puedes corregir rápido si ves fricción al salir.");
-  } else {
-    signals.push("Grupo pequeño: tienes más margen para aprovechar ahorro o mejor zona.");
-  }
-
-  return signals.slice(0, 3);
-}
-
-function getPreparationChecklist(meta) {
-  const items = [];
-
-  if (!meta) return items;
-
-  items.push("Define una base inicial antes de moverte, aunque luego la mejores.");
-
-  if (appState.arrivalType === "crucero") {
-    items.push("No des por hecho que salir del puerto rápido significa que cualquier zona encaja igual.");
-  }
-
-  if (appState.arrivalType === "vuelo") {
-    items.push("Si aterrizas cansado o con equipaje, prioriza menos desvíos y menos decisiones.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    items.push("Usa tu zona actual como ventaja; no reinicies la decisión como si acabaras de aterrizar.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    items.push("A esa hora, lo cercano y resolutivo suele ganar a lo aspiracional.");
-  } else {
-    items.push("Con esta hora todavía puedes comparar sin bloquear la ejecución.");
-  }
-
-  return items.slice(0, 3);
-}
-
-function getProRecommendation(meta) {
-  if (!meta) {
-    return {
-      title: "Sin recomendación pro todavía",
-      detail: "Completa una llegada válida para activar oportunidades."
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Modo pro recomendado: asegurar primero",
-      detail: "Cierra una salida limpia y una base práctica. Optimizar fino viene después."
-    };
-  }
-
-  return {
-    title: "Modo pro recomendado: aprovechar margen",
-    detail: "Puedes usar el contexto para mejorar zona, coste o comodidad sin perder control."
-  };
-}
-
-function getSuggestedTransportMode(meta) {
-  if (!meta) return "taxi";
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return "taxi";
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return "taxi";
-  }
-
-  return "bus";
-}
-
-function getProValuePitch(meta, recommendation, lodgingSuggestion) {
-  if (!meta || !lodgingSuggestion) {
-    return {
-      title: "Pro te ayuda a decidir mejor antes de moverte o reservar",
-      detail: "Aquí ya no se trata de ver una pista visual, sino de reducir una mala decisión.",
-      bullets: [
-        "Mapa completo en vez de vista parcial.",
-        "Detalles reales del alojamiento sugerido.",
-        "Alternativas útiles en lugar de decidir a ciegas."
-      ]
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Aquí Pro evita un error justo cuando menos margen tienes",
-      detail: `Con este contexto, elegir mal la zona puede complicarte la llegada, el descanso y el coste de moverte. ${lodgingSuggestion.primary.label} deja de ser solo una opción visible y pasa a ser una decisión que debes validar bien.`,
-      bullets: [
-        "Ver el mapa completo antes de comprometerte con una zona.",
-        "Entender la cautela real del alojamiento principal.",
-        `Cruzar la base sugerida con tu salida recomendada en ${recommendation.title.toLowerCase()}.`
-      ]
-    };
-  }
-
-  return {
-    title: "Aquí Pro deja de orientar y empieza a optimizar",
-    detail: `Ya no estás viendo solo un preview: aquí puedes validar si ${lodgingSuggestion.primary.label} encaja de verdad con tu llegada, tu zona y tu forma de moverte.`,
-    bullets: [
-      "Mapa completo y lectura más útil de la zona.",
-      "Comparativa real con alternativas visibles.",
-      "Más contexto para no pagar por una base que luego no compensa."
-    ]
-  };
-}
-
-export function renderPro() {
-  const meta = getArrivalMeta();
-  const reading = getProReading(meta);
-  const signals = getOpportunitySignals(meta);
-  const checklist = getPreparationChecklist(meta);
-  const recommendation = getProRecommendation(meta);
-  const transportMode = getSuggestedTransportMode(meta);
-  const lodgingSuggestion = getContextualLodgingRecommendation({
-    arrivalType: appState.arrivalType,
-    arrivalData: appState.arrivalData,
-    transportMode
+function markerIcon(isActive, isPrimary) {
+  return window.L.divIcon({
+    className: 'map-marker-shell',
+    html: `<span class="map-marker ${isPrimary ? 'map-marker--primary' : ''} ${isActive ? 'is-active' : ''}"></span>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11]
   });
-  const valuePitch = getProValuePitch(meta, recommendation, lodgingSuggestion);
+}
+
+function dispatchLodgingSelection(id) {
+  window.dispatchEvent(new CustomEvent('lz:select-lodging', {
+    detail: { id, source: 'pro' }
+  }));
+}
+
+function dedupeById(items) {
+  const seen = new Set();
+  return items.filter((item) => {
+    if (!item?.id || seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
+function pickSaverCandidate(items) {
+  return [...items].sort((a, b) => saverScore(b) - saverScore(a))[0] || null;
+}
+
+function pickComfortCandidate(items) {
+  return [...items].sort((a, b) => comfortScore(b) - comfortScore(a))[0] || null;
+}
+
+function saverScore(item) {
+  let score = item.score || 0;
+  if (item.transport?.busAvailable) score += 18;
+  if (typeof item.priceValue === 'number') score -= item.priceValue * 0.52;
+  if (typeof item.transport?.durationMin === 'number') score -= item.transport.durationMin * 0.35;
+  return score;
+}
+
+function comfortScore(item) {
+  let score = item.score || 0;
+  const bestFor = (item.bestFor || []).join(' ').toLowerCase();
+  const typeBlob = `${item.type || ''} ${item.vibe || ''}`.toLowerCase();
+  if (/familia|grupo|tranquila|primera base/.test(bestFor)) score += 12;
+  if (/resort|relajado|turístico/.test(typeBlob)) score += 9;
+  if (typeof item.transport?.durationMin === 'number' && item.transport.durationMin <= 24) score += 6;
+  if (typeof item.priceValue === 'number') score -= item.priceValue * 0.14;
+  return score;
+}
+
+function buildProStrategies() {
+  const base = getRecommendation();
+  if (!base) return null;
+
+  const taxi = getRecommendation('taxi');
+  const bus = getRecommendation('bus');
+  const pool = dedupeById([
+    base.primary,
+    ...(base.alternatives || []),
+    ...(taxi?.shortlist || []),
+    ...(bus?.shortlist || [])
+  ].filter(Boolean));
+
+  const balancedLodging = base.primary || pool[0] || null;
+  const saverLodging = pickSaverCandidate(pool) || balancedLodging;
+  const comfortLodging = pickComfortCandidate(pool.filter((item) => item.id !== saverLodging?.id)) || pool[1] || balancedLodging;
+
+  const strategies = [
+    balancedLodging ? {
+      key: 'balanced',
+      eyebrow: 'Plan redondo',
+      title: 'Resolver hoy sin liarte',
+      summary: 'La opción más limpia entre llegada, fricción, tiempo y salida real.',
+      mode: base.transferRecommendation?.mode || 'taxi',
+      lodging: balancedLodging,
+      bullets: [
+        balancedLodging.reasonLine,
+        balancedLodging.transport ? `${balancedLodging.transport.durationLabel} desde tu llegada` : 'Sin rodeos innecesarios',
+        'Es la opción que menos probabilidades tiene de hacerte perder tiempo por una mala primera decisión.'
+      ]
+    } : null,
+    saverLodging ? {
+      key: 'saver',
+      eyebrow: 'Plan ahorro',
+      title: 'Gastar menos sin hacer una chapuza',
+      summary: 'Prioriza coste y bus razonable, pero sin mandar al usuario a una base mala por ahorrar migas.',
+      mode: saverLodging.transport?.busAvailable ? 'bus' : 'taxi',
+      lodging: saverLodging,
+      bullets: [
+        saverLodging.transport?.busAvailable ? 'Mantiene una salida por guagua que todavía se defiende.' : 'Sigue siendo barato, pero no te promete una guagua que no existe.',
+        typeof saverLodging.priceValue === 'number' ? `Se mueve sobre ${saverLodging.priceText}/noche.` : saverLodging.reasonLine,
+        saverLodging.reasonLine
+      ]
+    } : null,
+    comfortLodging ? {
+      key: 'comfort',
+      eyebrow: 'Plan confort',
+      title: 'Dormir mejor aunque no sea lo más barato',
+      summary: 'Pensado para quien valora más sensación de estancia, grupo o descanso que el euro más bajo.',
+      mode: 'taxi',
+      lodging: comfortLodging,
+      bullets: [
+        comfortLodging.reasonLine,
+        comfortLodging.bestFor?.length ? `Encaja especialmente para ${comfortLodging.bestFor.slice(0, 2).join(' y ')}.` : 'Sube el nivel de estancia respecto a la pura base funcional.',
+        comfortLodging.transport ? `Asume ${comfortLodging.transport.durationLabel} de traslado para comprar mejor estancia.` : 'Compra más calidad de estancia.'
+      ]
+    } : null
+  ].filter(Boolean);
+
+  const usedIds = new Set(strategies.map((item) => item.lodging?.id).filter(Boolean));
+  const fallback = dedupeById([...(base.alternatives || []), ...pool]).find((item) => item.id && !usedIds.has(item.id)) || base.alternatives?.[0] || null;
+
+  return { base, taxi, bus, strategies, fallback };
+}
+
+export function destroyProMap() {
+  if (proMap) {
+    proMap.remove();
+    proMap = null;
+  }
+}
+
+export function initProMap() {
+  destroyProMap();
+  const container = document.getElementById('pro-map');
+  if (!container || !window.L) return;
+
+  const recommendation = getRecommendation();
+  const shortlist = recommendation?.shortlist || [];
+  if (!shortlist.length) return;
+
+  const selected = getSelectedLodging(recommendation);
+
+  proMap = window.L.map(container, {
+    zoomControl: true,
+    attributionControl: true,
+    scrollWheelZoom: false
+  });
+
+  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(proMap);
+
+  const bounds = [];
+  shortlist.forEach((item, index) => {
+    if (!item.coordinates?.lat || !item.coordinates?.lng) return;
+    const latlng = [item.coordinates.lat, item.coordinates.lng];
+    bounds.push(latlng);
+
+    const marker = window.L.marker(latlng, {
+      icon: markerIcon(item.id === selected?.id, index === 0)
+    }).addTo(proMap);
+
+    marker.on('click', () => dispatchLodgingSelection(item.id));
+    marker.bindTooltip(`${item.label} · ${item.score}/100`, { direction: 'top', offset: [0, -10] });
+  });
+
+  if (bounds.length === 1) proMap.setView(bounds[0], 12);
+  else proMap.fitBounds(bounds, { padding: [28, 28], maxZoom: 12 });
+
+  requestAnimationFrame(() => proMap?.invalidateSize());
+}
+
+function renderStrategicRead(recommendation) {
+  const transfer = recommendation?.transferRecommendation;
+  const meta = recommendation?.meta;
+  if (!transfer) return '';
 
   return `
-    <section class="screen screen--base">
-      <h2>Pro</h2>
-      <p>Oportunidades para anticiparte mejor según la llegada.</p>
-
-      <div class="decision-base">
-        <p><strong>${valuePitch.title}</strong></p>
-        <p>${valuePitch.detail}</p>
-      </div>
-
-      <div class="action-next-steps">
-        <p><strong>Lo que desbloqueas aquí</strong></p>
-        <ul>
-          ${valuePitch.bullets.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
-      </div>
-
-      <div class="decision-context">
-        <p><strong>Contexto actual</strong></p>
-        ${
-          meta
-            ? `
-        <ul>
-          <li><strong>Tipo:</strong> ${meta.typeLabel}</li>
-          <li><strong>Punto:</strong> ${meta.pointLabel}</li>
-          <li><strong>Hora:</strong> ${meta.time}</li>
-          <li><strong>Personas:</strong> ${meta.passengers}</li>
-          ${meta.extraLabel ? `<li><strong>Extra:</strong> ${meta.extraLabel}</li>` : ""}
-        </ul>
-        `
-            : `<p>No hay contexto disponible todavía.</p>`
-        }
-      </div>
-
-      <div class="decision-base">
-        <p><strong>Lectura Pro:</strong> ${reading.title}</p>
-        <p>${reading.detail}</p>
-      </div>
-
-      <div class="decision-comparison">
-        <p><strong>Oportunidades detectadas</strong></p>
-        <div class="decision-options">
-          ${signals
-            .map(
-              (signal) => `
-            <article class="decision-option decision-option--medio">
-              <p>${signal}</p>
-            </article>
-          `
-            )
-            .join("")}
+    <div class="strategy-card">
+      <div class="section-heading">
+        <div>
+          <span class="module-kicker">Lectura Pro</span>
+          <h3>${transfer.headline}</h3>
         </div>
+        <span class="score-badge">confianza ${transfer.confidence}</span>
       </div>
-
-      <div class="action-next-steps">
-        <p><strong>Qué conviene dejar cerrado</strong></p>
-        <ul>
-          ${checklist.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
+      <p>${transfer.summary}</p>
+      <div class="stay-facts-grid">
+        <div><strong>Modo recomendado</strong><span>${transfer.mode === 'taxi' ? 'Taxi' : 'Guagua'}</span></div>
+        <div><strong>Diferencia</strong><span>${transfer.scoreDelta} puntos</span></div>
+        <div><strong>Clima</strong><span>${meta?.weather ? `${meta.weather.label} · ${meta.weather.tempC}°C` : 'Fallback'}</span></div>
+        <div><strong>Carga</strong><span>${meta?.passengerLoad || '—'}</span></div>
       </div>
-
-      ${
-        lodgingSuggestion
-          ? `
-      <div class="pro-lodging-unlocked">
-        <p><strong>Desbloqueo Pro: mapa y alojamiento</strong></p>
-        <p>${lodgingSuggestion.intro}</p>
-
-        <div class="pro-lodging-unlocked-map">
-          <div class="pro-lodging-unlocked-badge">Mapa completo desbloqueado</div>
-          <div class="pro-lodging-unlocked-grid">
-            <div class="pro-lodging-unlocked-spot pro-lodging-unlocked-spot--primary">
-              <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-              <p>${lodgingSuggestion.primary.priceText}/noche</p>
-            </div>
-            ${
-              lodgingSuggestion.alternativesText
-                ? `
-            <div class="pro-lodging-unlocked-spot">
-              <p><strong>Alternativas</strong></p>
-              <p>${lodgingSuggestion.alternativesText}</p>
-            </div>
-            `
-                : ""
-            }
-          </div>
-        </div>
-
-        <div class="pro-lodging-unlocked-card">
-          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-          <p>${lodgingSuggestion.primary.type}</p>
-          <p><strong>Desde:</strong> ${lodgingSuggestion.primary.priceText}/noche</p>
-          <p><strong>Encaje:</strong> ${lodgingSuggestion.primary.reasonLine}</p>
-          <p><strong>Cautela:</strong> ${lodgingSuggestion.primary.caution}</p>
-        </div>
-
-        ${
-          lodgingSuggestion.alternativesText
-            ? `<p class="pro-lodging-unlocked-note"><strong>Alternativas reales:</strong> ${lodgingSuggestion.alternativesText}</p>`
-            : ""
-        }
-
-        <p class="pro-lodging-unlocked-note">Aquí Pro deja de ser un extra bonito y pasa a ayudarte a no elegir una zona que luego te castigue en tiempo, coste o comodidad.</p>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="decision-recommendation decision-recommendation--taxi">
-        <p><strong>${recommendation.title}</strong></p>
-        <p>${recommendation.detail}</p>
-      </div>
-    </section>
-  `;
-=======
-<<<<<<< HEAD
-import { mockData } from "../data/mock-data.js";
-import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
-
-const GOOGLE_STATIC_MAPS_ENDPOINT = "https://maps.googleapis.com/maps/api/staticmap";
-const LANZAROTE_FALLBACK_CENTER = { lat: 28.9611, lng: -13.6134 };
-
-function getGoogleStaticMapsApiKey() {
-  return String(window.APP_GOOGLE_MAPS_STATIC_API_KEY || "").trim();
-}
-
-function getVisibleMapLocations(lodgingSuggestion) {
-  const lodgingById = new Map(
-    (Array.isArray(mockData.lodging) ? mockData.lodging : []).map((item) => [item.id, item])
-  );
-
-  const visiblePins = lodgingSuggestion?.mapPreview?.pins || [];
-
-  return visiblePins
-    .map((pin) => {
-      const source = lodgingById.get(pin.id);
-
-      if (!source?.coordinates) {
-        return null;
-      }
-
-      return {
-        id: pin.id,
-        label: source.label,
-        priceText: pin.priceText,
-        coordinates: source.coordinates,
-        isPrimary: pin.isPrimary
-      };
-    })
-    .filter(Boolean);
-}
-
-function getMapBounds(locations) {
-  if (!Array.isArray(locations) || locations.length === 0) {
-    return null;
-  }
-
-  return locations.reduce(
-    (acc, location) => {
-      const { lat, lng } = location.coordinates;
-
-      return {
-        minLat: Math.min(acc.minLat, lat),
-        maxLat: Math.max(acc.maxLat, lat),
-        minLng: Math.min(acc.minLng, lng),
-        maxLng: Math.max(acc.maxLng, lng)
-      };
-    },
-    {
-      minLat: locations[0].coordinates.lat,
-      maxLat: locations[0].coordinates.lat,
-      minLng: locations[0].coordinates.lng,
-      maxLng: locations[0].coordinates.lng
-    }
-  );
-}
-
-function getMapCenter(locations) {
-  const bounds = getMapBounds(locations);
-
-  if (!bounds) {
-    return LANZAROTE_FALLBACK_CENTER;
-  }
-
-  return {
-    lat: Number(((bounds.minLat + bounds.maxLat) / 2).toFixed(6)),
-    lng: Number(((bounds.minLng + bounds.maxLng) / 2).toFixed(6))
-  };
-}
-
-function getMapZoom(locations) {
-  const bounds = getMapBounds(locations);
-
-  if (!bounds) {
-    return 10;
-  }
-
-  const latSpan = bounds.maxLat - bounds.minLat;
-  const lngSpan = bounds.maxLng - bounds.minLng;
-  const span = Math.max(latSpan, lngSpan);
-
-  if (span > 0.4) return 10;
-  if (span > 0.22) return 11;
-  if (span > 0.12) return 12;
-  return 13;
-}
-
-function buildGoogleStaticMapsUrl(locations, { width, height } = {}) {
-  const apiKey = getGoogleStaticMapsApiKey();
-
-  if (!apiKey || !Array.isArray(locations) || locations.length === 0) {
-    return "";
-  }
-
-  const limitedLocations = locations.slice(0, 5);
-  const center = getMapCenter(limitedLocations);
-  const zoom = getMapZoom(limitedLocations);
-  const params = new URLSearchParams({
-    key: apiKey,
-    size: `${width}x${height}`,
-    scale: "2",
-    maptype: "roadmap",
-    format: "png",
-    center: `${center.lat},${center.lng}`,
-    zoom: String(zoom)
-  });
-
-  limitedLocations.forEach((location) => {
-    const color = location.isPrimary ? "0x0f172a" : "0x64748b";
-    const size = location.isPrimary ? "mid" : "small";
-    params.append(
-      "markers",
-      `size:${size}|color:${color}|${location.coordinates.lat},${location.coordinates.lng}`
-    );
-  });
-
-  return `${GOOGLE_STATIC_MAPS_ENDPOINT}?${params.toString()}`;
-}
-
-function renderUnlockedMap(lodgingSuggestion) {
-  const locations = getVisibleMapLocations(lodgingSuggestion);
-  const staticMapUrl = buildGoogleStaticMapsUrl(locations, {
-    width: 760,
-    height: 420
-  });
-
-  return `
-    <div class="pro-lodging-unlocked-map ${staticMapUrl ? "pro-lodging-unlocked-map--real" : ""}">
-      ${
-        staticMapUrl
-          ? `
-      <img
-        src="${staticMapUrl}"
-        alt="Mapa completo de alojamientos sugeridos en Lanzarote"
-        class="pro-lodging-static-map-image"
-        loading="lazy"
-        decoding="async"
-      />
-      `
-          : ""
-      }
-      <div class="pro-lodging-unlocked-badge">Mapa completo desbloqueado</div>
-      <div class="pro-lodging-unlocked-grid">
-        <div class="pro-lodging-unlocked-spot pro-lodging-unlocked-spot--primary">
-          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-          <p>${lodgingSuggestion.primary.priceText}/noche</p>
-        </div>
-        ${
-          lodgingSuggestion.alternativesText
-            ? `
-        <div class="pro-lodging-unlocked-spot">
-          <p><strong>Alternativas</strong></p>
-          <p>${lodgingSuggestion.alternativesText}</p>
-        </div>
-        `
-            : ""
-        }
-      </div>
-      ${
-        staticMapUrl
-          ? '<div class="pro-lodging-unlocked-attribution">Base cartográfica: Google Maps</div>'
-          : ""
-      }
     </div>
   `;
 }
 
-function getPassengerLoad(value) {
-  if (value === "5+") return "high";
-
-  const numericValue = Number(value || 0);
-
-  if (numericValue >= 5) return "high";
-  if (numericValue >= 3) return "medium";
-  if (numericValue >= 1) return "low";
-
-  return "unknown";
-}
-
-function parseHour(value) {
-  const match = String(value || "").match(/^(\d{1,2}):/);
-  if (!match) return null;
-
-  const hour = Number(match[1]);
-  return Number.isNaN(hour) ? null : hour;
-}
-
-function isLateArrival(hour) {
-  if (hour === null) return false;
-  return hour >= 21 || hour <= 6;
-}
-
-function formatAirport(value) {
-  if (value === "ace") return "Aeropuerto César Manrique";
-  return value || "-";
-}
-
-function formatCruisePort(value) {
-  if (value === "arrecife") return "Puerto de Arrecife";
-  if (value === "calero" || value === "puerto-calero") return "Puerto Calero";
-  return value || "-";
-}
-
-function formatManualArea(value) {
-  if (value === "arrecife") return "Arrecife";
-  if (value === "playa-honda") return "Playa Honda";
-  if (value === "puerto-del-carmen") return "Puerto del Carmen";
-  if (value === "costa-teguise") return "Costa Teguise";
-  if (value === "playa-blanca") return "Playa Blanca";
-  if (value === "otra") return "Otra zona";
-  return value || "-";
-}
-
-function getArrivalMeta() {
-  if (appState.arrivalType === "vuelo") {
-    return {
-      typeLabel: "Vuelo",
-      pointLabel: formatAirport(appState.arrivalData.flight.airport),
-      time: appState.arrivalData.flight.time || "-",
-      passengers: appState.arrivalData.flight.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.flight.passengers),
-      hour: parseHour(appState.arrivalData.flight.time),
-      extraLabel: null
-    };
-  }
-
-  if (appState.arrivalType === "crucero") {
-    const disembark = appState.arrivalData.cruise.disembarkContext;
-
-    return {
-      typeLabel: "Crucero",
-      pointLabel: formatCruisePort(appState.arrivalData.cruise.port),
-      time: appState.arrivalData.cruise.time || "-",
-      passengers: appState.arrivalData.cruise.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.cruise.passengers),
-      hour: parseHour(appState.arrivalData.cruise.time),
-      extraLabel:
-        disembark === "rapido"
-          ? "Desembarque rápido"
-          : disembark === "normal"
-            ? "Desembarque normal"
-            : disembark === "lento"
-              ? "Desembarque lento"
-              : "-"
-    };
-  }
-
-  if (appState.arrivalType === "manual") {
-    return {
-      typeLabel: "Manual",
-      pointLabel: appState.arrivalData.manual.location || "-",
-      time: appState.arrivalData.manual.time || "-",
-      passengers: appState.arrivalData.manual.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.manual.passengers),
-      hour: parseHour(appState.arrivalData.manual.time),
-      extraLabel: formatManualArea(appState.arrivalData.manual.area)
-    };
-  }
-
-  return null;
-}
-
-function getProReading(meta) {
-  if (!meta) {
-    return {
-      title: "Sin contexto suficiente",
-      detail: "Todavía no hay base útil para detectar oportunidades."
-    };
-  }
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return {
-      title: "Ventana sensible",
-      detail: "Aquí la ventaja no está en correr, sino en evitar fricción y dejar cerrado lo importante antes."
-    };
-  }
-
-  if (meta.load === "high") {
-    return {
-      title: "Ventana sensible",
-      detail: "Con grupo grande, la oportunidad real está en reducir improvisación y pasos innecesarios."
-    };
-  }
-
-  if (isLateArrival(meta.hour)) {
-    return {
-      title: "Ventana útil corta",
-      detail: "Llegada tardía: conviene asegurar primero lo cercano y lo resolutivo."
-    };
-  }
-
-  return {
-    title: "Ventana favorable",
-    detail: "Hay margen para decidir con algo más de cabeza y sacar ventaja del contexto."
-  };
-}
-
-function getOpportunitySignals(meta) {
-  const signals = [];
-
-  if (!meta) return signals;
-
-  if (appState.arrivalType === "vuelo") {
-    signals.push("Puedes orientar mejor la primera base según rapidez de salida desde aeropuerto.");
-  }
-
-  if (appState.arrivalType === "crucero") {
-    signals.push("La clave no es solo salir del puerto, sino evitar una base que añada desvíos inútiles.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    signals.push("Tu ventaja está en adaptar la decisión a la zona real en la que ya caíste.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    signals.push("Conviene priorizar alojamiento práctico antes que una zona bonita pero peor conectada.");
-  } else {
-    signals.push("Con esta hora, todavía puedes balancear practicidad y zona sin ir tan forzado.");
-  }
-
-  if (meta.load === "high") {
-    signals.push("Grupo grande: vale más una decisión simple y ejecutable que una opción teóricamente perfecta.");
-  } else if (meta.load === "medium") {
-    signals.push("Grupo medio: todavía puedes corregir rápido si ves fricción al salir.");
-  } else {
-    signals.push("Grupo pequeño: tienes más margen para aprovechar ahorro o mejor zona.");
-  }
-
-  return signals.slice(0, 3);
-}
-
-function getPreparationChecklist(meta) {
-  const items = [];
-
-  if (!meta) return items;
-
-  items.push("Define una base inicial antes de moverte, aunque luego la mejores.");
-
-  if (appState.arrivalType === "crucero") {
-    items.push("No des por hecho que salir del puerto rápido significa que cualquier zona encaja igual.");
-  }
-
-  if (appState.arrivalType === "vuelo") {
-    items.push("Si aterrizas cansado o con equipaje, prioriza menos desvíos y menos decisiones.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    items.push("Usa tu zona actual como ventaja; no reinicies la decisión como si acabaras de aterrizar.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    items.push("A esa hora, lo cercano y resolutivo suele ganar a lo aspiracional.");
-  } else {
-    items.push("Con esta hora todavía puedes comparar sin bloquear la ejecución.");
-  }
-
-  return items.slice(0, 3);
-}
-
-function getProRecommendation(meta) {
-  if (!meta) {
-    return {
-      title: "Sin recomendación pro todavía",
-      detail: "Completa una llegada válida para activar oportunidades."
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Modo pro recomendado: asegurar primero",
-      detail: "Cierra una salida limpia y una base práctica. Optimizar fino viene después."
-    };
-  }
-
-  return {
-    title: "Modo pro recomendado: aprovechar margen",
-    detail: "Puedes usar el contexto para mejorar zona, coste o comodidad sin perder control."
-  };
-}
-
-function getSuggestedTransportMode(meta) {
-  if (!meta) return "taxi";
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return "taxi";
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return "taxi";
-  }
-
-  return "bus";
-}
-
-function getProValuePitch(meta, recommendation, lodgingSuggestion) {
-  if (!meta || !lodgingSuggestion) {
-    return {
-      title: "Pro te ayuda a decidir mejor antes de moverte o reservar",
-      detail: "Aquí ya no se trata de ver una pista visual, sino de reducir una mala decisión.",
-      bullets: [
-        "Mapa completo en vez de vista parcial.",
-        "Detalles reales del alojamiento sugerido.",
-        "Alternativas útiles en lugar de decidir a ciegas."
-      ]
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Aquí Pro evita un error justo cuando menos margen tienes",
-      detail: `Con este contexto, elegir mal la zona puede complicarte la llegada, el descanso y el coste de moverte. ${lodgingSuggestion.primary.label} deja de ser solo una opción visible y pasa a ser una decisión que debes validar bien.`,
-      bullets: [
-        "Ver el mapa completo antes de comprometerte con una zona.",
-        "Entender la cautela real del alojamiento principal.",
-        `Cruzar la base sugerida con tu salida recomendada en ${recommendation.title.toLowerCase()}.`
-      ]
-    };
-  }
-
-  return {
-    title: "Aquí Pro deja de orientar y empieza a optimizar",
-    detail: `Ya no estás viendo solo un preview: aquí puedes validar si ${lodgingSuggestion.primary.label} encaja de verdad con tu llegada, tu zona y tu forma de moverte.`,
-    bullets: [
-      "Mapa completo y lectura más útil de la zona.",
-      "Comparativa real con alternativas visibles.",
-      "Más contexto para no pagar por una base que luego no compensa."
-    ]
-  };
-}
-
-export function renderPro() {
-  const meta = getArrivalMeta();
-  const reading = getProReading(meta);
-  const signals = getOpportunitySignals(meta);
-  const checklist = getPreparationChecklist(meta);
-  const recommendation = getProRecommendation(meta);
-  const transportMode = getSuggestedTransportMode(meta);
-  const lodgingSuggestion = getContextualLodgingRecommendation({
-    arrivalType: appState.arrivalType,
-    arrivalData: appState.arrivalData,
-    transportMode
-  });
-  const valuePitch = getProValuePitch(meta, recommendation, lodgingSuggestion);
+function renderStrategyCards(payload) {
+  if (!payload?.strategies?.length) return '';
 
   return `
-    <section class="screen screen--base">
-      <h2>Pro</h2>
-      <p>Oportunidades para anticiparte mejor según la llegada.</p>
+    <div class="pro-plan-grid">
+      ${payload.strategies.map((plan) => {
+        const lodging = plan.lodging;
+        const actions = buildLodgingActionSet({
+          lodging,
+          arrivalKey: payload.base?.meta?.arrivalKey,
+          hasDirectBus: lodging.transport?.busAvailable
+        }).slice(0, 3);
 
-      <div class="decision-base">
-        <p><strong>${valuePitch.title}</strong></p>
-        <p>${valuePitch.detail}</p>
-      </div>
-
-      <div class="action-next-steps">
-        <p><strong>Lo que desbloqueas aquí</strong></p>
-        <ul>
-          ${valuePitch.bullets.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
-      </div>
-
-      <div class="decision-context">
-        <p><strong>Contexto actual</strong></p>
-        ${
-          meta
-            ? `
-        <ul>
-          <li><strong>Tipo:</strong> ${meta.typeLabel}</li>
-          <li><strong>Punto:</strong> ${meta.pointLabel}</li>
-          <li><strong>Hora:</strong> ${meta.time}</li>
-          <li><strong>Personas:</strong> ${meta.passengers}</li>
-          ${meta.extraLabel ? `<li><strong>Extra:</strong> ${meta.extraLabel}</li>` : ""}
-        </ul>
-        `
-            : `<p>No hay contexto disponible todavía.</p>`
-        }
-      </div>
-
-      <div class="decision-base">
-        <p><strong>Lectura Pro:</strong> ${reading.title}</p>
-        <p>${reading.detail}</p>
-      </div>
-
-      <div class="decision-comparison">
-        <p><strong>Oportunidades detectadas</strong></p>
-        <div class="decision-options">
-          ${signals
-            .map(
-              (signal) => `
-            <article class="decision-option decision-option--medio">
-              <p>${signal}</p>
-            </article>
-          `
-            )
-            .join("")}
-        </div>
-      </div>
-
-      <div class="action-next-steps">
-        <p><strong>Qué conviene dejar cerrado</strong></p>
-        <ul>
-          ${checklist.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
-      </div>
-
-      ${
-        lodgingSuggestion
-          ? `
-      <div class="pro-lodging-unlocked">
-        <p><strong>Desbloqueo Pro: mapa y alojamiento</strong></p>
-        <p>${lodgingSuggestion.intro}</p>
-
-        ${renderUnlockedMap(lodgingSuggestion)}
-
-        <div class="pro-lodging-unlocked-card">
-          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-          <p>${lodgingSuggestion.primary.type}</p>
-          <p><strong>Desde:</strong> ${lodgingSuggestion.primary.priceText}/noche</p>
-          <p><strong>Encaje:</strong> ${lodgingSuggestion.primary.reasonLine}</p>
-          <p><strong>Cautela:</strong> ${lodgingSuggestion.primary.caution}</p>
-        </div>
-
-        ${
-          lodgingSuggestion.alternativesText
-            ? `<p class="pro-lodging-unlocked-note"><strong>Alternativas reales:</strong> ${lodgingSuggestion.alternativesText}</p>`
-            : ""
-        }
-
-        <p class="pro-lodging-unlocked-note">Aquí Pro deja de ser un extra bonito y pasa a ayudarte a no elegir una zona que luego te castigue en tiempo, coste o comodidad.</p>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="decision-recommendation decision-recommendation--taxi">
-        <p><strong>${recommendation.title}</strong></p>
-        <p>${recommendation.detail}</p>
-      </div>
-    </section>
+        return `
+          <article class="pro-plan-card ${appState.selectedLodgingId === lodging.id ? 'is-active' : ''}">
+            <div class="section-heading">
+              <div>
+                <span class="module-kicker">${plan.eyebrow}</span>
+                <h3>${plan.title}</h3>
+              </div>
+              <span class="score-badge">${lodging.score}/100</span>
+            </div>
+            <p>${plan.summary}</p>
+            <p><strong>${lodging.label}</strong> · ${lodging.type}</p>
+            <div class="stay-facts-grid">
+              <div><strong>Precio</strong><span>${lodging.priceText}/noche</span></div>
+              <div><strong>Traslado</strong><span>${lodging.transport ? lodging.transport.durationLabel : '—'}</span></div>
+              <div><strong>Modo</strong><span>${plan.mode === 'taxi' ? 'Taxi' : 'Guagua / mixto'}</span></div>
+              <div><strong>Taxi</strong><span>${lodging.transport ? `${lodging.transport.taxiMin}–${lodging.transport.taxiMax} €` : '—'}</span></div>
+            </div>
+            <ul class="detail-bullets">${plan.bullets.map((item) => `<li>${item}</li>`).join('')}</ul>
+            <div class="action-link-grid">
+              ${actions.map((item) => `<a class="link-chip ${item.kind === 'primary' ? 'link-chip--primary' : ''}" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a>`).join('')}
+              <button type="button" class="button button--ghost pro-plan-apply" data-activate-pro-plan="${plan.key}" data-plan-mode="${plan.mode}" data-plan-lodging="${lodging.id}">Aplicar y pasar a Acción</button>
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
   `;
-=======
-import { getContextualLodgingRecommendation } from "../services/lodging-service.js";
-
-function getPassengerLoad(value) {
-  if (value === "5+") return "high";
-
-  const numericValue = Number(value || 0);
-
-  if (numericValue >= 5) return "high";
-  if (numericValue >= 3) return "medium";
-  if (numericValue >= 1) return "low";
-
-  return "unknown";
 }
 
-function parseHour(value) {
-  const match = String(value || "").match(/^(\d{1,2}):/);
-  if (!match) return null;
+function renderFallbackPlan(payload) {
+  const fallback = payload?.fallback;
+  if (!fallback) return '';
+  const actions = buildLodgingActionSet({
+    lodging: fallback,
+    arrivalKey: payload.base?.meta?.arrivalKey,
+    hasDirectBus: fallback.transport?.busAvailable
+  }).slice(0, 2);
 
-  const hour = Number(match[1]);
-  return Number.isNaN(hour) ? null : hour;
+  return `
+    <div class="strategy-card strategy-card--fallback">
+      <div class="section-heading">
+        <div>
+          <span class="module-kicker">Plan B real</span>
+          <h3>${fallback.label} como respaldo rápido</h3>
+        </div>
+        <span class="score-badge">alternativa útil</span>
+      </div>
+      <p>Esto sí diferencia un plan serio de una recomendación bonita: ya tienes la siguiente jugada preparada si la primera se te cae.</p>
+      <ul class="detail-bullets">
+        <li>Úsalo si la cola de taxi se pone fea o el precio real del primer alojamiento no te cuadra.</li>
+        <li>${fallback.reasonLine}</li>
+        <li>${fallback.transport ? `Te mete ${fallback.transport.durationLabel} de traslado y mantiene una salida ${fallback.transport.busAvailable ? 'con bus razonable' : 'más dependiente del taxi'}.` : 'Mantiene una segunda salida coherente.'}</li>
+      </ul>
+      <div class="action-link-grid">
+        ${actions.map((item) => `<a class="link-chip" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a>`).join('')}
+        <button type="button" class="button button--ghost pro-plan-apply" data-activate-pro-plan="fallback" data-plan-mode="${fallback.transport?.busAvailable ? 'bus' : 'taxi'}" data-plan-lodging="${fallback.id}">Usar este respaldo</button>
+      </div>
+    </div>
+  `;
 }
 
-function isLateArrival(hour) {
-  if (hour === null) return false;
-  return hour >= 21 || hour <= 6;
+function renderComparisonTable(recommendation, selected) {
+  if (!recommendation?.shortlist?.length) return '';
+
+  return `
+    <div class="comparison-table-card">
+      <div class="section-heading">
+        <div>
+          <span class="module-kicker">Comparativa rápida</span>
+          <h3>Qué zona gana y por qué</h3>
+        </div>
+      </div>
+      <div class="pro-compare-list">
+        ${recommendation.shortlist.map((item, index) => `
+          <button type="button" class="pro-compare-row ${item.id === selected?.id ? 'is-active' : ''}" data-select-lodging="${item.id}">
+            <span class="pro-rank">#${index + 1}</span>
+            <span class="pro-zone">
+              <strong>${item.label}</strong>
+              <small>${item.type}</small>
+            </span>
+            <span class="pro-metrics">
+              <strong>${item.score}/100</strong>
+              <small>${item.transport ? item.transport.durationLabel : '—'} · ${item.priceText}</small>
+            </span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
 }
 
-function formatAirport(value) {
-  if (value === "ace") return "Aeropuerto César Manrique";
-  return value || "-";
+function renderSelectedPanel(recommendation, selected) {
+  if (!selected) return '';
+  const actionSet = buildLodgingActionSet({
+    lodging: selected,
+    arrivalKey: recommendation?.meta?.arrivalKey,
+    hasDirectBus: selected.transport?.busAvailable
+  });
+  const narrative = buildLodgingNarrative(selected, recommendation.transferRecommendation);
+
+  return `
+    <div class="selected-stay-card selected-stay-card--pro">
+      <div class="section-heading">
+        <div>
+          <span class="module-kicker">Detalle útil</span>
+          <h3>${selected.label}</h3>
+        </div>
+        <span class="score-badge">${selected.score}/100</span>
+      </div>
+      <p>${selected.areaSummary}</p>
+      <div class="stay-facts-grid">
+        <div><strong>Precio</strong><span>${selected.priceText}/noche</span></div>
+        <div><strong>Traslado</strong><span>${selected.transport ? `${selected.transport.durationLabel} · ${selected.transport.distanceKm} km` : '—'}</span></div>
+        <div><strong>Taxi</strong><span>${selected.transport ? `${selected.transport.taxiMin}–${selected.transport.taxiMax} €` : '—'}</span></div>
+        <div><strong>Guagua</strong><span>${selected.transport?.busAvailable ? 'Sí, como plan razonable' : 'Floja o poco directa'}</span></div>
+      </div>
+      <ul class="detail-bullets">
+        ${(narrative?.bullets || [selected.reasonLine]).map((item) => `<li>${item}</li>`).join('')}
+        ${(selected.downsides || []).slice(0, 2).map((item) => `<li>${item}</li>`).join('')}
+      </ul>
+      ${selected.bestFor?.length ? `<p><strong>Encaja sobre todo para:</strong> ${selected.bestFor.join(' · ')}</p>` : ''}
+      ${selected.caution ? `<p class="field-help"><strong>Ojo:</strong> ${selected.caution}</p>` : ''}
+      <div class="action-link-grid">
+        ${actionSet.map((item) => `<a class="link-chip ${item.kind === 'primary' ? 'link-chip--primary' : ''}" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a>`).join('')}
+      </div>
+    </div>
+  `;
 }
 
-function formatCruisePort(value) {
-  if (value === "arrecife") return "Puerto de Arrecife";
-  if (value === "calero" || value === "puerto-calero") return "Puerto Calero";
-  return value || "-";
-}
-
-function formatManualArea(value) {
-  if (value === "arrecife") return "Arrecife";
-  if (value === "playa-honda") return "Playa Honda";
-  if (value === "puerto-del-carmen") return "Puerto del Carmen";
-  if (value === "costa-teguise") return "Costa Teguise";
-  if (value === "playa-blanca") return "Playa Blanca";
-  if (value === "otra") return "Otra zona";
-  return value || "-";
-}
-
-function getArrivalMeta() {
-  if (appState.arrivalType === "vuelo") {
-    return {
-      typeLabel: "Vuelo",
-      pointLabel: formatAirport(appState.arrivalData.flight.airport),
-      time: appState.arrivalData.flight.time || "-",
-      passengers: appState.arrivalData.flight.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.flight.passengers),
-      hour: parseHour(appState.arrivalData.flight.time),
-      extraLabel: null
-    };
-  }
-
-  if (appState.arrivalType === "crucero") {
-    const disembark = appState.arrivalData.cruise.disembarkContext;
-
-    return {
-      typeLabel: "Crucero",
-      pointLabel: formatCruisePort(appState.arrivalData.cruise.port),
-      time: appState.arrivalData.cruise.time || "-",
-      passengers: appState.arrivalData.cruise.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.cruise.passengers),
-      hour: parseHour(appState.arrivalData.cruise.time),
-      extraLabel:
-        disembark === "rapido"
-          ? "Desembarque rápido"
-          : disembark === "normal"
-            ? "Desembarque normal"
-            : disembark === "lento"
-              ? "Desembarque lento"
-              : "-"
-    };
-  }
-
-  if (appState.arrivalType === "manual") {
-    return {
-      typeLabel: "Manual",
-      pointLabel: appState.arrivalData.manual.location || "-",
-      time: appState.arrivalData.manual.time || "-",
-      passengers: appState.arrivalData.manual.passengers || "-",
-      load: getPassengerLoad(appState.arrivalData.manual.passengers),
-      hour: parseHour(appState.arrivalData.manual.time),
-      extraLabel: formatManualArea(appState.arrivalData.manual.area)
-    };
-  }
-
-  return null;
-}
-
-function getProReading(meta) {
-  if (!meta) {
-    return {
-      title: "Sin contexto suficiente",
-      detail: "Todavía no hay base útil para detectar oportunidades."
-    };
-  }
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return {
-      title: "Ventana sensible",
-      detail: "Aquí la ventaja no está en correr, sino en evitar fricción y dejar cerrado lo importante antes."
-    };
-  }
-
-  if (meta.load === "high") {
-    return {
-      title: "Ventana sensible",
-      detail: "Con grupo grande, la oportunidad real está en reducir improvisación y pasos innecesarios."
-    };
-  }
-
-  if (isLateArrival(meta.hour)) {
-    return {
-      title: "Ventana útil corta",
-      detail: "Llegada tardía: conviene asegurar primero lo cercano y lo resolutivo."
-    };
-  }
-
-  return {
-    title: "Ventana favorable",
-    detail: "Hay margen para decidir con algo más de cabeza y sacar ventaja del contexto."
-  };
-}
-
-function getOpportunitySignals(meta) {
-  const signals = [];
-
-  if (!meta) return signals;
-
-  if (appState.arrivalType === "vuelo") {
-    signals.push("Puedes orientar mejor la primera base según rapidez de salida desde aeropuerto.");
-  }
-
-  if (appState.arrivalType === "crucero") {
-    signals.push("La clave no es solo salir del puerto, sino evitar una base que añada desvíos inútiles.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    signals.push("Tu ventaja está en adaptar la decisión a la zona real en la que ya caíste.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    signals.push("Conviene priorizar alojamiento práctico antes que una zona bonita pero peor conectada.");
-  } else {
-    signals.push("Con esta hora, todavía puedes balancear practicidad y zona sin ir tan forzado.");
-  }
-
-  if (meta.load === "high") {
-    signals.push("Grupo grande: vale más una decisión simple y ejecutable que una opción teóricamente perfecta.");
-  } else if (meta.load === "medium") {
-    signals.push("Grupo medio: todavía puedes corregir rápido si ves fricción al salir.");
-  } else {
-    signals.push("Grupo pequeño: tienes más margen para aprovechar ahorro o mejor zona.");
-  }
-
-  return signals.slice(0, 3);
-}
-
-function getPreparationChecklist(meta) {
+function renderProInsights(recommendation) {
   const items = [];
+  const primary = recommendation?.primary;
+  if (!primary) return '';
 
-  if (!meta) return items;
+  items.push(`La base líder es <strong>${primary.label}</strong> porque entra mejor en este momento, no porque sea la más aspiracional.`);
+  if (primary.transport?.busAvailable) items.push('Todavía conserva salida decente por guagua, así que no te obliga a un plan único.');
+  else items.push('Evita prometerte una guagua limpia donde realmente no la hay.');
+  if (recommendation.meta?.isLateArrival) items.push('Con esta hora, la inmediatez pesa más que una zona más bonita pero peor conectada.');
+  if (recommendation.meta?.weather?.operationalNote) items.push(recommendation.meta.weather.operationalNote);
 
-  items.push("Define una base inicial antes de moverte, aunque luego la mejores.");
-
-  if (appState.arrivalType === "crucero") {
-    items.push("No des por hecho que salir del puerto rápido significa que cualquier zona encaja igual.");
-  }
-
-  if (appState.arrivalType === "vuelo") {
-    items.push("Si aterrizas cansado o con equipaje, prioriza menos desvíos y menos decisiones.");
-  }
-
-  if (appState.arrivalType === "manual") {
-    items.push("Usa tu zona actual como ventaja; no reinicies la decisión como si acabaras de aterrizar.");
-  }
-
-  if (isLateArrival(meta.hour)) {
-    items.push("A esa hora, lo cercano y resolutivo suele ganar a lo aspiracional.");
-  } else {
-    items.push("Con esta hora todavía puedes comparar sin bloquear la ejecución.");
-  }
-
-  return items.slice(0, 3);
-}
-
-function getProRecommendation(meta) {
-  if (!meta) {
-    return {
-      title: "Sin recomendación pro todavía",
-      detail: "Completa una llegada válida para activar oportunidades."
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Modo pro recomendado: asegurar primero",
-      detail: "Cierra una salida limpia y una base práctica. Optimizar fino viene después."
-    };
-  }
-
-  return {
-    title: "Modo pro recomendado: aprovechar margen",
-    detail: "Puedes usar el contexto para mejorar zona, coste o comodidad sin perder control."
-  };
-}
-
-function getSuggestedTransportMode(meta) {
-  if (!meta) return "taxi";
-
-  if (appState.arrivalType === "crucero" && meta.extraLabel === "Desembarque lento") {
-    return "taxi";
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return "taxi";
-  }
-
-  return "bus";
-}
-
-function getProValuePitch(meta, recommendation, lodgingSuggestion) {
-  if (!meta || !lodgingSuggestion) {
-    return {
-      title: "Pro te ayuda a decidir mejor antes de moverte o reservar",
-      detail: "Aquí ya no se trata de ver una pista visual, sino de reducir una mala decisión.",
-      bullets: [
-        "Mapa completo en vez de vista parcial.",
-        "Detalles reales del alojamiento sugerido.",
-        "Alternativas útiles en lugar de decidir a ciegas."
-      ]
-    };
-  }
-
-  if (isLateArrival(meta.hour) || meta.load === "high") {
-    return {
-      title: "Aquí Pro evita un error justo cuando menos margen tienes",
-      detail: `Con este contexto, elegir mal la zona puede complicarte la llegada, el descanso y el coste de moverte. ${lodgingSuggestion.primary.label} deja de ser solo una opción visible y pasa a ser una decisión que debes validar bien.`,
-      bullets: [
-        "Ver el mapa completo antes de comprometerte con una zona.",
-        "Entender la cautela real del alojamiento principal.",
-        `Cruzar la base sugerida con tu salida recomendada en ${recommendation.title.toLowerCase()}.`
-      ]
-    };
-  }
-
-  return {
-    title: "Aquí Pro deja de orientar y empieza a optimizar",
-    detail: `Ya no estás viendo solo un preview: aquí puedes validar si ${lodgingSuggestion.primary.label} encaja de verdad con tu llegada, tu zona y tu forma de moverte.`,
-    bullets: [
-      "Mapa completo y lectura más útil de la zona.",
-      "Comparativa real con alternativas visibles.",
-      "Más contexto para no pagar por una base que luego no compensa."
-    ]
-  };
+  return `
+    <div class="strategy-card strategy-card--insights">
+      <div class="section-heading">
+        <div>
+          <span class="module-kicker">Alertas y lectura</span>
+          <h3>Qué estás evitando si sigues esta propuesta</h3>
+        </div>
+      </div>
+      <ul class="detail-bullets">${items.map((item) => `<li>${item}</li>`).join('')}</ul>
+    </div>
+  `;
 }
 
 export function renderPro() {
-  const meta = getArrivalMeta();
-  const reading = getProReading(meta);
-  const signals = getOpportunitySignals(meta);
-  const checklist = getPreparationChecklist(meta);
-  const recommendation = getProRecommendation(meta);
-  const transportMode = getSuggestedTransportMode(meta);
-  const lodgingSuggestion = getContextualLodgingRecommendation({
-    arrivalType: appState.arrivalType,
-    arrivalData: appState.arrivalData,
-    transportMode
-  });
-  const valuePitch = getProValuePitch(meta, recommendation, lodgingSuggestion);
+  const payload = buildProStrategies();
+  const recommendation = payload?.base || null;
+  const selected = getSelectedLodging(recommendation);
 
   return `
     <section class="screen screen--base">
-      <h2>Pro</h2>
-      <p>Oportunidades para anticiparte mejor según la llegada.</p>
-
-      <div class="decision-base">
-        <p><strong>${valuePitch.title}</strong></p>
-        <p>${valuePitch.detail}</p>
+      <div class="module-intro">
+        <span class="module-kicker">Pro</span>
+        <h2>Tres planes reales y un respaldo listo</h2>
+        <p>Aquí sí hay una diferencia práctica: no solo ves la mejor zona, también sales con plan redondo, plan ahorro, plan confort y plan B activable.</p>
       </div>
 
-      <div class="action-next-steps">
-        <p><strong>Lo que desbloqueas aquí</strong></p>
-        <ul>
-          ${valuePitch.bullets.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
-      </div>
-
-      <div class="decision-context">
-        <p><strong>Contexto actual</strong></p>
-        ${
-          meta
-            ? `
-        <ul>
-          <li><strong>Tipo:</strong> ${meta.typeLabel}</li>
-          <li><strong>Punto:</strong> ${meta.pointLabel}</li>
-          <li><strong>Hora:</strong> ${meta.time}</li>
-          <li><strong>Personas:</strong> ${meta.passengers}</li>
-          ${meta.extraLabel ? `<li><strong>Extra:</strong> ${meta.extraLabel}</li>` : ""}
-        </ul>
-        `
-            : `<p>No hay contexto disponible todavía.</p>`
-        }
-      </div>
-
-      <div class="decision-base">
-        <p><strong>Lectura Pro:</strong> ${reading.title}</p>
-        <p>${reading.detail}</p>
-      </div>
-
-      <div class="decision-comparison">
-        <p><strong>Oportunidades detectadas</strong></p>
-        <div class="decision-options">
-          ${signals
-            .map(
-              (signal) => `
-            <article class="decision-option decision-option--medio">
-              <p>${signal}</p>
-            </article>
-          `
-            )
-            .join("")}
-        </div>
-      </div>
-
-      <div class="action-next-steps">
-        <p><strong>Qué conviene dejar cerrado</strong></p>
-        <ul>
-          ${checklist.map((item) => `<li>${item}</li>`).join("")}
-        </ul>
-      </div>
-
-      ${
-        lodgingSuggestion
-          ? `
-      <div class="pro-lodging-unlocked">
-        <p><strong>Desbloqueo Pro: mapa y alojamiento</strong></p>
-        <p>${lodgingSuggestion.intro}</p>
-
-        <div class="pro-lodging-unlocked-map">
-          <div class="pro-lodging-unlocked-badge">Mapa completo desbloqueado</div>
-          <div class="pro-lodging-unlocked-grid">
-            <div class="pro-lodging-unlocked-spot pro-lodging-unlocked-spot--primary">
-              <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-              <p>${lodgingSuggestion.primary.priceText}/noche</p>
+      ${recommendation ? renderStrategicRead(recommendation) : ''}
+      ${renderStrategyCards(payload)}
+      ${renderFallbackPlan(payload)}
+      ${recommendation?.shortlist?.length ? `
+        <div class="map-card map-card--pro">
+          <div class="section-heading">
+            <div>
+              <span class="module-kicker">Mapa conectado</span>
+              <h3>Top zonas sugeridas</h3>
             </div>
-            ${
-              lodgingSuggestion.alternativesText
-                ? `
-            <div class="pro-lodging-unlocked-spot">
-              <p><strong>Alternativas</strong></p>
-              <p>${lodgingSuggestion.alternativesText}</p>
-            </div>
-            `
-                : ""
-            }
+            <span class="field-help">Marcadores interactivos</span>
           </div>
+          <div id="pro-map" class="map-canvas map-canvas--large" aria-label="Mapa pro con alojamientos sugeridos"></div>
         </div>
+      ` : ''}
 
-        <div class="pro-lodging-unlocked-card">
-          <p><strong>${lodgingSuggestion.primary.label}</strong></p>
-          <p>${lodgingSuggestion.primary.type}</p>
-          <p><strong>Desde:</strong> ${lodgingSuggestion.primary.priceText}/noche</p>
-          <p><strong>Encaje:</strong> ${lodgingSuggestion.primary.reasonLine}</p>
-          <p><strong>Cautela:</strong> ${lodgingSuggestion.primary.caution}</p>
-        </div>
-
-        ${
-          lodgingSuggestion.alternativesText
-            ? `<p class="pro-lodging-unlocked-note"><strong>Alternativas reales:</strong> ${lodgingSuggestion.alternativesText}</p>`
-            : ""
-        }
-
-        <p class="pro-lodging-unlocked-note">Aquí Pro deja de ser un extra bonito y pasa a ayudarte a no elegir una zona que luego te castigue en tiempo, coste o comodidad.</p>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="decision-recommendation decision-recommendation--taxi">
-        <p><strong>${recommendation.title}</strong></p>
-        <p>${recommendation.detail}</p>
-      </div>
+      ${renderComparisonTable(recommendation, selected)}
+      ${renderSelectedPanel(recommendation, selected)}
+      ${renderProInsights(recommendation)}
     </section>
   `;
->>>>>>> fd02cb93628d129706c6bd63aeb4f106e52980a7
->>>>>>> 7444d22 (fase 4-5: actualiza llegada, decision, accion, radar y servicios)
 }
