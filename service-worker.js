@@ -1,6 +1,6 @@
-const SHELL_CACHE = 'lz-shell-v3';
-const DATA_CACHE = 'lz-data-v3';
-const RUNTIME_CACHE = 'lz-runtime-v3';
+const SHELL_CACHE = 'lz-shell-v4';
+const DATA_CACHE = 'lz-data-v4';
+const RUNTIME_CACHE = 'lz-runtime-v4';
 
 const APP_SHELL = [
   './',
@@ -32,11 +32,7 @@ const APP_SHELL = [
   './js/modules/decision.js',
   './js/modules/accion.js',
   './js/modules/pro.js',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
-  './assets/icons/apple-touch-icon.png',
-  './assets/icons/favicon.svg',
-  './assets/images/og-cover.png'
+  './assets/icons/favicon.svg'
 ];
 
 self.addEventListener('install', (event) => {
