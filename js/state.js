@@ -1,31 +1,23 @@
 export const appState = {
-  currentRoute: "home",
+  currentRoute: 'home',
   arrivalType: null,
   arrivalData: {
-    flight: {
-      airport: "",
-      time: "",
-      passengers: ""
-    },
-    cruise: {
-      port: "",
-      time: "",
-      passengers: "",
-      disembarkContext: ""
-    },
-    manual: {
-      location: "",
-      area: "",
-      time: "",
-      passengers: ""
-    }
+    flight: { airport: '', time: '', passengers: '', flightNumber: '' },
+    cruise: { port: '', time: '', passengers: '', disembarkContext: '' },
+    manual: { location: '', area: '', time: '', passengers: '' }
   },
-  userContext: null,
   operationalContext: null,
-  lodgingContext: null,
+  operationalContextLoading: false,
+  operationalContextError: null,
+  flightLookup: { loading: false, result: null, error: null },
   recommendation: null,
-  actionExecution: {
-    active: false,
-    mode: null
+  selectedLodgingId: null,
+  selectedLodgingSource: 'action',
+  actionExecution: { active: false, mode: null },
+  ui: {
+    offline: typeof navigator !== 'undefined' ? !navigator.onLine : false,
+    installPromptAvailable: false,
+    dismissedInstall: false,
+    toast: null
   }
 };
