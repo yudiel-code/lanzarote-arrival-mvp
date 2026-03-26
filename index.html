@@ -2,25 +2,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proyecto web para turistas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Lanzarote Arrival Guide · Llegada, movilidad y base útil</title>
+  <meta name="description" content="Asistente mobile-first para llegar a Lanzarote con mejor criterio: clima, tiempos reales, mapa, base sugerida y salidas accionables." />
+  <meta name="theme-color" content="#11263f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lanzarote Guide" />
+  <meta name="format-detection" content="telephone=no" />
 
+  <meta property="og:title" content="Lanzarote Arrival Guide" />
+  <meta property="og:description" content="Decide rápido cómo salir, moverte y qué base te conviene al llegar a Lanzarote." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/images/og-cover.png" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/reset.css" />
   <link rel="stylesheet" href="styles/base.css" />
   <link rel="stylesheet" href="styles/layout.css" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
   <div id="app"></div>
 
-  <script>
-    window.APP_GOOGLE_MAPS_STATIC_API_KEY = window.APP_GOOGLE_MAPS_STATIC_API_KEY || "";
-  </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
