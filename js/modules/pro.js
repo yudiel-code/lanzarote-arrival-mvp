@@ -15,6 +15,11 @@ function getFilterOptions(items) {
   return { zones, types };
 }
 
+function formatZoneLabel(zone) {
+  const sample = getAllOptions().find((item) => item.zone === zone);
+  return sample?.zoneLabel || zone;
+}
+
 function applyFilters(items) {
   const { zone, type, maxPrice, sort } = appState.proFilters;
   let filtered = [...items];
@@ -40,8 +45,8 @@ function markerIcon(item, isActive) {
   return window.L.divIcon({
     className: 'map-price-marker-shell',
     html: `<span class="map-price-marker ${isActive ? 'is-active' : ''}"><strong>${item.priceText}</strong><small>${item.label}</small></span>`,
-    iconSize: [92, 42],
-    iconAnchor: [46, 42]
+    iconSize: [88, 40],
+    iconAnchor: [44, 40]
   });
 }
 
@@ -93,10 +98,28 @@ export function initProMap() {
     marker.bindTooltip(`${item.label} · ${item.priceText} · ${item.score}/100`, { direction: 'top', offset: [0, -12] });
   });
 
-  if (bounds.length === 1) proMap.setView(bounds[0], 12);
-  else proMap.fitBounds(bounds, { padding: [28, 28], maxZoom: 12 });
+  if (bounds.length === 1) {
+    proMap.setView(bounds[0], 11);
+  } else {
+    proMap.fitBounds(bounds, {
+      paddingTopLeft: [84, 84],
+      paddingBottomRight: [84, 84],
+      maxZoom: 11
+    });
+  }
 
   requestAnimationFrame(() => proMap?.invalidateSize());
+}
+
+function renderZoneChips(zones) {
+  return `
+    <div class="pro-zone-chips" aria-label="Filtrar por zona">
+      <button type="button" class="pro-zone-chip ${appState.proFilters.zone === 'all' ? 'is-active' : ''}" data-pro-zone="all">Todas</button>
+      ${zones.map((zone) => `
+        <button type="button" class="pro-zone-chip ${appState.proFilters.zone === zone ? 'is-active' : ''}" data-pro-zone="${zone}">${formatZoneLabel(zone)}</button>
+      `).join('')}
+    </div>
+  `;
 }
 
 function renderProFilters(items) {
@@ -106,19 +129,13 @@ function renderProFilters(items) {
     <div class="pro-filters-card">
       <div class="section-heading">
         <div>
-          <span class="module-kicker">Control real</span>
-          <h3>Filtra el alojamiento a tu manera</h3>
+          <span class="module-kicker">Filtro por zonas</span>
+          <h3>Elige la zona que prefiera el cliente</h3>
         </div>
-        <span class="field-help">Mapa y lista sincronizados</span>
+        <span class="field-help">Mostrando todo el catálogo actual</span>
       </div>
+      ${renderZoneChips(zones)}
       <div class="pro-filters-grid">
-        <label class="field">
-          <span>Zona</span>
-          <select id="pro-filter-zone">
-            <option value="all" ${appState.proFilters.zone === 'all' ? 'selected' : ''}>Todas</option>
-            ${zones.map((zone) => `<option value="${zone}" ${appState.proFilters.zone === zone ? 'selected' : ''}>${zone}</option>`).join('')}
-          </select>
-        </label>
         <label class="field">
           <span>Tipo</span>
           <select id="pro-filter-type">
@@ -130,7 +147,7 @@ function renderProFilters(items) {
           <span>Precio máximo</span>
           <input id="pro-filter-max-price" type="number" min="0" step="1" placeholder="Ej. 110" value="${appState.proFilters.maxPrice || ''}" />
         </label>
-        <label class="field">
+        <label class="field field--full">
           <span>Ordenar</span>
           <select id="pro-filter-sort">
             <option value="recommended" ${appState.proFilters.sort === 'recommended' ? 'selected' : ''}>Mejor encaje</option>
@@ -149,14 +166,14 @@ function renderMarketSummary(filtered, total) {
     <div class="strategy-card strategy-card--insights">
       <div class="section-heading">
         <div>
-          <span class="module-kicker">Gancho Pro</span>
-          <h3>Explora el mercado sin salirte del contexto</h3>
+          <span class="module-kicker">Mercado visible</span>
+          <h3>Precios del catálogo actual en el mapa</h3>
         </div>
       </div>
       <ul class="detail-bullets">
-        <li>Ahora ves <strong>${filtered.length}</strong> opciones visibles de un total de <strong>${total}</strong>.</li>
-        <li>Puedes filtrar por <strong>zona</strong>, <strong>tipo</strong> y <strong>precio</strong> sin perder la lógica de llegada.</li>
-        <li>Cuando tocas una opción, te llevamos a <strong>Booking</strong> para cerrar la reserva.</li>
+        <li>Ahora mismo se muestran <strong>${filtered.length}</strong> precios visibles de un total de <strong>${total}</strong> alojamientos cargados.</li>
+        <li>Si eliges una zona, el mapa y la lista se reducen a esa preferencia.</li>
+        <li>Al tocar una opción, la salida final sigue siendo en <strong>Booking</strong>.</li>
       </ul>
     </div>
   `;
@@ -167,7 +184,7 @@ function renderMapCard(filtered) {
     <div class="map-card map-card--pro">
       <div class="section-heading">
         <div>
-          <span class="module-kicker">Mapa con precios</span>
+          <span class="module-kicker">Mapa con todos los precios</span>
           <h3>Alojamientos visibles ahora</h3>
         </div>
         <span class="field-help">Toca un precio para seleccionar</span>
@@ -182,7 +199,7 @@ function renderMapCard(filtered) {
           <h3>No hay alojamientos con esos filtros</h3>
         </div>
       </div>
-      <p>Relaja precio máximo o cambia zona/tipo. Ahora mismo te has pasado de estrecho.</p>
+      <p>Relaja el precio máximo o cambia la zona/tipo. Ahora mismo te quedaste demasiado estrecho.</p>
     </div>
   `;
 }
@@ -257,8 +274,8 @@ export function renderPro() {
     <section class="screen screen--base">
       <div class="module-intro">
         <span class="module-kicker">Pro</span>
-        <h2>Explora alojamientos con mapa, filtros y precios</h2>
-        <p>Aquí sí hay gancho real: tú controlas zona, tipo y precio antes de salir a Booking.</p>
+        <h2>Explora alojamientos con mapa, zonas y precios</h2>
+        <p>Aquí manda el cliente: eliges zona, ves precios y luego sales a Booking.</p>
       </div>
 
       ${renderProFilters(allOptions)}

@@ -412,6 +412,13 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const proZoneBtn = event.target.closest('[data-pro-zone]');
+  if (proZoneBtn) {
+    appState.proFilters.zone = proZoneBtn.dataset.proZone || 'all';
+    renderApp();
+    return;
+  }
+
   const lodgingBtn = event.target.closest('[data-select-lodging]');
   if (lodgingBtn) {
     appState.selectedLodgingId = lodgingBtn.dataset.selectLodging;

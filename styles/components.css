@@ -78,7 +78,8 @@
 .button,
 .stay-option,
 .pro-compare-row,
-.pro-result-card {
+.pro-result-card,
+.pro-zone-chip {
   border: 0;
   border-radius: 1rem;
   transition: transform var(--t-fast), background var(--t-fast), box-shadow var(--t-fast), color var(--t-fast), border-color var(--t-fast);
@@ -100,7 +101,8 @@
 .progress-pill.is-active,
 .stay-option.is-active,
 .pro-compare-row.is-active,
-.pro-result-card.is-active {
+.pro-result-card.is-active,
+.pro-zone-chip.is-active {
   background: var(--c-navy);
   color: #fff;
   box-shadow: 0 10px 22px rgba(17, 38, 63, 0.18);
@@ -371,10 +373,30 @@
 }
 
 .button--ghost,
-#share-btn {
+#share-btn,
+.pro-zone-chip {
   background: rgba(17, 38, 63, 0.05);
   color: var(--c-text);
   box-shadow: none;
+}
+
+.pro-zone-chips {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: none;
+}
+
+.pro-zone-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.pro-zone-chip {
+  flex: 0 0 auto;
+  min-height: 2.7rem;
+  padding: 0.72rem 0.95rem;
+  font-weight: 700;
 }
 
 .link-chip {
@@ -583,8 +605,8 @@
 .map-price-marker {
   display: grid;
   gap: 0.1rem;
-  min-width: 5.2rem;
-  padding: 0.38rem 0.55rem;
+  min-width: 5rem;
+  padding: 0.34rem 0.5rem;
   border-radius: 0.95rem 0.95rem 0.95rem 0.2rem;
   background: rgba(17, 38, 63, 0.96);
   color: #fff;
@@ -592,12 +614,12 @@
 }
 
 .map-price-marker strong {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   line-height: 1;
 }
 
 .map-price-marker small {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   line-height: 1.1;
   opacity: 0.84;
 }
@@ -722,7 +744,8 @@
   .link-chip:hover,
   .stay-option:hover,
   .pro-compare-row:hover,
-  .pro-result-card:hover {
+  .pro-result-card:hover,
+  .pro-zone-chip:hover {
     transform: translateY(-1px);
   }
 }
